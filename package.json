@@ -1,8 +1,8 @@
 {
-  "name": "@financial-times/tooling-helpers.git",
+  "name": "@financial-times/tooling-helpers",
   "version": "0.0.0",
   "description": "",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
