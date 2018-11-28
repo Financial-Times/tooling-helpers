@@ -80,3 +80,6 @@ typings/
 
 # FuseBox cache
 .fusebox/
+
+package-lock.json
+ToDo.txt
