@@ -19,7 +19,7 @@ octokit.authenticate({
 
 	const project = await createProject.createProject(octokit, {
 		org: 'financial-times-sandbox',
-		name: 'Keran\'s Test Project'
+		name: 'Sample Project'
 	});
 
 	const projectId = project.data.id;
@@ -46,5 +46,14 @@ octokit.authenticate({
 	});
 
 	const doneColumnId = doneColumn.data.id;
+
+	// Create a card with a note which returns an object with a card ID
+
+	const card = await createProjectCard.createProjectCard(octokit, {
+		column_id: toDoColumnId,
+		note: 'Sample note'
+	});
+
+	const cardId = card.data.id;
 
 })();
