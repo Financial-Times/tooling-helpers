@@ -1,5 +1,8 @@
-module.exports.createPullRequestCard = async (octokit, { column_id, content_id, content_type }) => {
-	const result = await octokit.projects.createCard({ column_id, content_id, content_type });
+module.exports = (octokit) => {
 
-	return result;
+	return async ({ column_id, content_id, content_type }) => {
+		const result = await octokit.projects.createCard({ column_id, content_id, content_type });
+
+		return result.data;
+	};
 };

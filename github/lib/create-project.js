@@ -1,5 +1,8 @@
-module.exports.createProject = async (octokit, { org, name }) => {
-	const result = await octokit.projects.createForOrg({ org, name });
+module.exports = (octokit) => {
 
-	return result;
+	return async ({ org, name }) => {
+		const result = await octokit.projects.createForOrg({ org, name });
+
+		return result.data;
+	};
 };
