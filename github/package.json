@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@octokit/rest": "^16.0.1"
+    "@octokit/rest": "^16.0.1",
+    "dotenv": "^6.1.0"
   }
 }
