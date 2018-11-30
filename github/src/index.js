@@ -12,11 +12,11 @@ octokit.authenticate({
 	token: process.env.GITHUB_KEY
 });
 
-const createProject = require('./lib/create-project')(octokit);
-const createProjectColumn = require('./lib/create-project-column')(octokit);
-const createNoteCard = require('./lib/create-note-card')(octokit);
-const createPullRequest = require('./lib/create-pull-request')(octokit);
-const createPullRequestCard = require('./lib/create-pull-request-card')(octokit);
+const createProject = require('./create-project')(octokit);
+const createProjectColumn = require('./create-project-column')(octokit);
+const createNoteCard = require('./create-note-card')(octokit);
+const createPullRequest = require('./create-pull-request')(octokit);
+const createPullRequestCard = require('./create-pull-request-card')(octokit);
 
 module.exports = {
 	createProject,
