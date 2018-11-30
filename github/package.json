@@ -2,12 +2,12 @@
   "name": "github-helpers",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "github": "./cli.js"
+    "github": "./src/cli.js"
   },
   "author": "",
   "license": "ISC",
