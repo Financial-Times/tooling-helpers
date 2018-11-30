@@ -1,3 +1,6 @@
+# package-lock.json
+package-lock.json
+
 # Jest
 test-results
 
@@ -80,5 +83,3 @@ typings/
 
 # FuseBox cache
 .fusebox/
-
-package-lock.json
