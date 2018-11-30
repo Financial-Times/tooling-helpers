@@ -1,4 +1,4 @@
-const { createProject, createProjectColumn } = require('../index');
+const {  } = require('../index');
 
 const builder = (yargs) => {
 
@@ -46,14 +46,13 @@ const handler = async ({ org, name }) => {
 	};
 
 	const json = JSON.stringify(details);
-
 	console.log(json);
 
 };
 
 module.exports = {
 	command: 'project:create',
-	desc: 'Create a new project',
+	desc: 'Create a new project and project columns',
 	builder,
 	handler,
 };
