@@ -53,7 +53,7 @@ const handler = async ({ org, name }) => {
 
 module.exports = {
 	command: 'project:create',
-	desc: 'Create a new project and project columns',
+	desc: 'Create a new project',
 	builder,
 	handler,
 };
