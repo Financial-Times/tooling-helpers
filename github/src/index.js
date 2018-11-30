@@ -2,14 +2,23 @@ require('dotenv').config();
 
 const octokit = require('@octokit/rest')({
 	headers: {
+		/**
+		 * Access Projects API using this Accept header while it is under preview
+		 *
+		 * @see https://developer.github.com/v3/projects
+		 */
 		Accept: 'application/vnd.github.inertia-preview+json'
 	}
 });
 
-// Token (https://github.com/settings/tokens)
+/**
+ * Authenicate GitHub API calls using GitHub personal access token
+ *
+ * @see https://github.com/octokit/rest.js#authentication
+ */
 octokit.authenticate({
 	type: 'token',
-	token: process.env.GITHUB_KEY
+	token: process.env.GITHUB_PERSONAL_ACCESS_TOKEN
 });
 
 const createProject = require('./create-project')(octokit);
