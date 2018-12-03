@@ -1,11 +1,3 @@
-/**
- * TODO:
- *
- * - Ensure we always have an index available
- * - Error handling in every method - https://www.nodegit.org/api/error/#CODE
- * - JSDoc comments
- */
-
 const NodeGit = require("nodegit");
 
 const remoteCallbacks = {
