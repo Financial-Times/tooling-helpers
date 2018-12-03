@@ -1,6 +1,7 @@
 /**
  * TODO:
  *
+ * - Ensure we always have an index available
  * - Error handling in every method - https://www.nodegit.org/api/error/#CODE
  * - JSDoc comments
  */
@@ -95,6 +96,11 @@ class GitRepo {
   }
 
   async addFile({ filepath }) {
+    // TODO: Review this
+    if (!this.index) {
+      this.index = await this.repo.refreshIndex();
+    }
+
     await this.index.addByPath(filepath);
     await this.index.write();
 
