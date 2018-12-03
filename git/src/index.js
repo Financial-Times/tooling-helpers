@@ -8,30 +8,36 @@
 
 const NodeGit = require("nodegit");
 
+const remoteCallbacks = {
+  /**
+   * Workaround for GitHub certificate issue in OS X
+   *
+   * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
+   */
+  certificateCheck: () => {
+    return 1;
+  },
+  credentials: () => {
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error(
+        "Missing environment variable GITHUB_TOKEN - please set this!"
+      );
+    }
+    return NodeGit.Cred.userpassPlaintextNew(
+      process.env.GITHUB_TOKEN,
+      "x-oauth-basic"
+    );
+  }
+};
+
 const cloneOptions = {
   fetchOpts: {
-    callbacks: {
-      /**
-       * Workaround for GitHub certificate issue in OS X
-       *
-       * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
-       */
-      certificateCheck: () => {
-        return 1;
-      },
-      credentials: () => {
-        if (!process.env.GITHUB_TOKEN) {
-          throw new Error(
-            "Missing environment variable GITHUB_TOKEN - please set this!"
-          );
-        }
-        return NodeGit.Cred.userpassPlaintextNew(
-          process.env.GITHUB_TOKEN,
-          "x-oauth-basic"
-        );
-      }
-    }
+    callbacks: remoteCallbacks
   }
+};
+
+const pushOptions = {
+  callbacks: remoteCallbacks
 };
 
 class Git {
@@ -139,6 +145,24 @@ class GitRepo {
     this.index = await this.repo.refreshIndex();
 
     return commitId;
+  }
+
+  async pushCurrentBranchToRemote({ remote = "origin" } = {}) {
+    const headReference = await this.repo.head();
+    const referenceName = headReference.name();
+
+    await this.pushReferenceToRemote({ referenceName, remote });
+
+    return true;
+  }
+
+  async pushReferenceToRemote({ referenceName, remote } = {}) {
+    const remoteObject = await this.repo.getRemote(remote);
+    const refSpec = `${referenceName}:${referenceName}`;
+
+    await remoteObject.push([refSpec], pushOptions);
+
+    return true;
   }
 }
 
