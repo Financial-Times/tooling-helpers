@@ -1,3 +1,10 @@
+/**
+ * TODO:
+ *
+ * - Error handling in every method - https://www.nodegit.org/api/error/#CODE
+ * - JSDoc comments
+ */
+
 const NodeGit = require("nodegit");
 
 const cloneOptions = {
@@ -51,34 +58,76 @@ class Git {
 
 class GitRepo {
   constructor(repo) {
+    /**
+     * @type import('nodegit').Repository
+     */
     this.repo = repo;
+    this.index = null;
     this.workingDirectory = this.repo.workdir();
   }
 
-  async checkout({ branch = false } = {}) {
+  async createBranch({ branch }) {
+
     const fromBranch = "master";
 
-    if (typeof branch === "string") {
-      const mostRecentCommitId = (await this.repo.getBranchCommit(
-        fromBranch
-      )).id();
-      await this.repo.createBranch(branch, mostRecentCommitId);
-    }
+    const mostRecentCommit = await this.repo.getBranchCommit(fromBranch);
+    const mostRecentCommitId = mostRecentCommit.id();
 
+    await this.repo.createBranch(branch, mostRecentCommitId);
+
+    // TODO: Review this
+    this.index = await this.repo.refreshIndex();
+
+    return true;
+  }
+
+  async checkoutBranch({ branch }) {
     await this.repo.checkoutBranch(branch);
 
-    const currentBranch = (await this.repo.getCurrentBranch()).name();
-    console.log({ currentBranch });
+    return true;
   }
 
-  async add({ filepath }) {
-    const repoIndex = await this.repo.refreshIndex();
-    await repoIndex.addByPath(filepath);
-    repoIndex.write();
+  async createBranchAndCheckout({ branch }) {
+    await this.createBranch({ branch });
+    await this.checkoutBranch({ branch });
+
+    return true;
   }
 
-  async commit({ message }) {
-    console.log(`GitRepo#commit: Not yet implemented`, { message });
+  async addFile({ filepath }) {
+    await this.index.addByPath(filepath);
+    await this.index.write();
+
+    return true;
+  }
+
+  async removeFile({ filepath }) {
+    await this.index.removeByPath(filepath);
+    await this.index.write();
+
+    return true;
+  }
+
+  async createCommit({ message }) {
+
+    const treeOId = await this.index.writeTree();
+
+    const headOId = await NodeGit.Reference.nameToId(this.repo, 'HEAD');
+    const parentCommit = await this.repo.getCommit(headOId);
+
+    // TODO: Review this
+    const gitConfig = await NodeGit.Config.openDefault();
+    const gitUserEmail = (await gitConfig.getStringBuf('user.email')).toString();
+    const gitUserName = (await gitConfig.getStringBuf('user.name')).toString();
+    const author = NodeGit.Signature.now(gitUserName, gitUserEmail);
+    const committer = NodeGit.Signature.now(gitUserName, gitUserEmail);
+
+    const commitId = await this.repo.createCommit('HEAD', author, committer, message, treeOId, [parentCommit]);
+
+    // TODO: Review this
+    this.index = await this.repo.refreshIndex();
+
+    return commitId;
   }
 }
 
