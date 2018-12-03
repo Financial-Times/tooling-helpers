@@ -68,7 +68,6 @@ class GitRepo {
   }
 
   async createBranch({ branch }) {
-
     const fromBranch = "master";
 
     const mostRecentCommit = await this.repo.getBranchCommit(fromBranch);
@@ -115,20 +114,26 @@ class GitRepo {
   }
 
   async createCommit({ message }) {
-
     const treeOId = await this.index.writeTree();
 
-    const headOId = await NodeGit.Reference.nameToId(this.repo, 'HEAD');
+    const headOId = await NodeGit.Reference.nameToId(this.repo, "HEAD");
     const parentCommit = await this.repo.getCommit(headOId);
 
     // TODO: Review this
     const gitConfig = await NodeGit.Config.openDefault();
-    const gitUserEmail = (await gitConfig.getStringBuf('user.email')).toString();
-    const gitUserName = (await gitConfig.getStringBuf('user.name')).toString();
+    const gitUserEmail = (await gitConfig.getStringBuf("user.email")).toString();
+    const gitUserName = (await gitConfig.getStringBuf("user.name")).toString();
     const author = NodeGit.Signature.now(gitUserName, gitUserEmail);
     const committer = NodeGit.Signature.now(gitUserName, gitUserEmail);
 
-    const commitId = await this.repo.createCommit('HEAD', author, committer, message, treeOId, [parentCommit]);
+    const commitId = await this.repo.createCommit(
+      "HEAD",
+      author,
+      committer,
+      message,
+      treeOId,
+      [parentCommit]
+    );
 
     // TODO: Review this
     this.index = await this.repo.refreshIndex();
