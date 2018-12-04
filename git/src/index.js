@@ -1,29 +1,35 @@
 const NodeGit = require("nodegit");
 
+const remoteCallbacks = {
+  /**
+   * Workaround for GitHub certificate issue in OS X
+   *
+   * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
+   */
+  certificateCheck: () => {
+    return 1;
+  },
+  credentials: () => {
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error(
+        "Missing environment variable GITHUB_TOKEN - please set this!"
+      );
+    }
+    return NodeGit.Cred.userpassPlaintextNew(
+      process.env.GITHUB_TOKEN,
+      "x-oauth-basic"
+    );
+  }
+};
+
 const cloneOptions = {
   fetchOpts: {
-    callbacks: {
-      /**
-       * Workaround for GitHub certificate issue in OS X
-       *
-       * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
-       */
-      certificateCheck: () => {
-        return 1;
-      },
-      credentials: () => {
-        if (!process.env.GITHUB_TOKEN) {
-          throw new Error(
-            "Missing environment variable GITHUB_TOKEN - please set this!"
-          );
-        }
-        return NodeGit.Cred.userpassPlaintextNew(
-          process.env.GITHUB_TOKEN,
-          "x-oauth-basic"
-        );
-      }
-    }
+    callbacks: remoteCallbacks
   }
+};
+
+const pushOptions = {
+  callbacks: remoteCallbacks
 };
 
 class Git {
@@ -51,34 +57,104 @@ class Git {
 
 class GitRepo {
   constructor(repo) {
+    /**
+     * @type import('nodegit').Repository
+     */
     this.repo = repo;
+    this.index = null;
     this.workingDirectory = this.repo.workdir();
   }
 
-  async checkout({ branch = false } = {}) {
+  async createBranch({ branch }) {
     const fromBranch = "master";
 
-    if (typeof branch === "string") {
-      const mostRecentCommitId = (await this.repo.getBranchCommit(
-        fromBranch
-      )).id();
-      await this.repo.createBranch(branch, mostRecentCommitId);
-    }
+    const mostRecentCommit = await this.repo.getBranchCommit(fromBranch);
+    const mostRecentCommitId = mostRecentCommit.id();
 
+    await this.repo.createBranch(branch, mostRecentCommitId);
+
+    // TODO: Review this
+    this.index = await this.repo.refreshIndex();
+
+    return true;
+  }
+
+  async checkoutBranch({ branch }) {
     await this.repo.checkoutBranch(branch);
 
-    const currentBranch = (await this.repo.getCurrentBranch()).name();
-    console.log({ currentBranch });
+    return true;
   }
 
-  async add({ filepath }) {
-    const repoIndex = await this.repo.refreshIndex();
-    await repoIndex.addByPath(filepath);
-    repoIndex.write();
+  async createBranchAndCheckout({ branch }) {
+    await this.createBranch({ branch });
+    await this.checkoutBranch({ branch });
+
+    return true;
   }
 
-  async commit({ message }) {
-    console.log(`GitRepo#commit: Not yet implemented`, { message });
+  async addFile({ filepath }) {
+    // TODO: Review this
+    if (!this.index) {
+      this.index = await this.repo.refreshIndex();
+    }
+
+    await this.index.addByPath(filepath);
+    await this.index.write();
+
+    return true;
+  }
+
+  async removeFile({ filepath }) {
+    await this.index.removeByPath(filepath);
+    await this.index.write();
+
+    return true;
+  }
+
+  async createCommit({ message }) {
+    const treeOId = await this.index.writeTree();
+
+    const headOId = await NodeGit.Reference.nameToId(this.repo, "HEAD");
+    const parentCommit = await this.repo.getCommit(headOId);
+
+    // TODO: Review this
+    const gitConfig = await NodeGit.Config.openDefault();
+    const gitUserEmail = (await gitConfig.getStringBuf("user.email")).toString();
+    const gitUserName = (await gitConfig.getStringBuf("user.name")).toString();
+    const author = NodeGit.Signature.now(gitUserName, gitUserEmail);
+    const committer = NodeGit.Signature.now(gitUserName, gitUserEmail);
+
+    const commitOId = await this.repo.createCommit(
+      "HEAD",
+      author,
+      committer,
+      message,
+      treeOId,
+      [parentCommit]
+    );
+
+    // TODO: Review this
+    this.index = await this.repo.refreshIndex();
+
+    return commitOId.tostrS();
+  }
+
+  async pushCurrentBranchToRemote({ remote = "origin" } = {}) {
+    const headReference = await this.repo.head();
+    const referenceName = headReference.name();
+
+    await this.pushReferenceToRemote({ referenceName, remote });
+
+    return true;
+  }
+
+  async pushReferenceToRemote({ referenceName, remote } = {}) {
+    const remoteObject = await this.repo.getRemote(remote);
+    const refSpec = `${referenceName}:${referenceName}`;
+
+    await remoteObject.push([refSpec], pushOptions);
+
+    return true;
   }
 }
 
