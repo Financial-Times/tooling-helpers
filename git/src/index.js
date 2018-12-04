@@ -124,7 +124,7 @@ class GitRepo {
     const author = NodeGit.Signature.now(gitUserName, gitUserEmail);
     const committer = NodeGit.Signature.now(gitUserName, gitUserEmail);
 
-    const commitId = await this.repo.createCommit(
+    const commitOId = await this.repo.createCommit(
       "HEAD",
       author,
       committer,
@@ -136,7 +136,7 @@ class GitRepo {
     // TODO: Review this
     this.index = await this.repo.refreshIndex();
 
-    return commitId;
+    return commitOId.tostrS();
   }
 
   async pushCurrentBranchToRemote({ remote = "origin" } = {}) {
