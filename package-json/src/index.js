@@ -8,6 +8,13 @@ const dependencyFields = [
 ];
 
 const changelogMessages = {
+  setField: ({ field, previousValue }) => {
+    let message = `Set value for field '${field}'`;
+    message += previousValue
+      ? ` (overwrote existing value)`
+      : " (new field)";
+    return message;
+  },
   requireDependency: ({ pkg, field, version, previousVersionRange }) => {
     let message = `Required package ${pkg}@${version} in ${field}`;
     message += previousVersionRange
@@ -67,6 +74,39 @@ class PackageJson {
    */
   getField(field) {
     return this.workingContents[field];
+  }
+
+  /**
+   * Set the value for a specific field in the `package.json` object.
+   *
+   * @param {string} field
+   * @param {*} value
+   *
+   * @returns {object} - changelog entry
+   */
+  setField(field, value) {
+    const changelogEntry = {
+      event: "setField",
+      field,
+      previousValue: false,
+      written: false
+    };
+
+    const fieldAlreadyExists =
+      typeof this.workingContents[field] !== "undefined";
+
+    changelogEntry.previousValue = this.workingContents[field];
+
+    this.workingContents[field] = value;
+
+    if (this.options.writeImmediately === true) {
+      this.write();
+      changelogEntry.written = true;
+    }
+
+    this.changelog.push(changelogEntry);
+
+    return changelogEntry;
   }
 
   /**
@@ -210,6 +250,7 @@ class PackageJson {
 
     const scriptsFieldExists =
       typeof this.workingContents.scripts !== "undefined";
+
     if (!scriptsFieldExists) {
       this.workingContents.scripts = {};
     }
@@ -218,6 +259,7 @@ class PackageJson {
 
     const lifecycleEventAlreadyExists =
       typeof scripts[lifecycleEvent] !== "undefined";
+
     changelogEntry.alreadyExisted = lifecycleEventAlreadyExists;
 
     scripts[lifecycleEvent] = command;
