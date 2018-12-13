@@ -56,13 +56,29 @@ class Git {
 }
 
 class GitRepo {
-  constructor(repo) {
+  constructor(repo = null) {
+    this.repo = null;
+    this.workingDirectory = null;
+    this.index = null;
+
+    if (repo) {
+      this.setRepo(repo);
+    }
+  }
+
+  setRepo(repo) {
     /**
      * @type import('nodegit').Repository
      */
     this.repo = repo;
-    this.index = null;
     this.workingDirectory = this.repo.workdir();
+  }
+
+  async open(directoryPath) {
+    const repo = await NodeGit.Repository.open(directoryPath);
+    this.setRepo(repo);
+
+    return true;
   }
 
   async createBranch({ branch }) {
@@ -73,7 +89,6 @@ class GitRepo {
 
     await this.repo.createBranch(branch, mostRecentCommitId);
 
-    // TODO: Review this
     this.index = await this.repo.refreshIndex();
 
     return true;
@@ -93,7 +108,6 @@ class GitRepo {
   }
 
   async addFile({ filepath }) {
-    // TODO: Review this
     if (!this.index) {
       this.index = await this.repo.refreshIndex();
     }
@@ -117,7 +131,6 @@ class GitRepo {
     const headOId = await NodeGit.Reference.nameToId(this.repo, "HEAD");
     const parentCommit = await this.repo.getCommit(headOId);
 
-    // TODO: Review this
     const gitConfig = await NodeGit.Config.openDefault();
     const gitUserEmail = (await gitConfig.getStringBuf("user.email")).toString();
     const gitUserName = (await gitConfig.getStringBuf("user.name")).toString();
@@ -133,7 +146,6 @@ class GitRepo {
       [parentCommit]
     );
 
-    // TODO: Review this
     this.index = await this.repo.refreshIndex();
 
     return commitOId.tostrS();
@@ -161,5 +173,4 @@ class GitRepo {
 module.exports = {
   Git,
   GitRepo,
-  NodeGit
 };
