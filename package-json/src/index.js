@@ -7,7 +7,10 @@ const dependencyFields = [
   "peerDependencies"
 ];
 
-const changelogMessages = {
+/**
+ * Functions for creating human-friendly messages from changelog objects.
+ */
+const createChangelogMessage = {
   setField: ({ field, previousValue }) => {
     let message = `Set value for field '${field}'`;
     message += previousValue
@@ -32,6 +35,9 @@ const changelogMessages = {
       ? ` (overwrote existing command)`
       : " (new script)";
     return message;
+  },
+  fallback: (entry) => {
+    return JSON.stringify(entry);
   }
 };
 
@@ -130,18 +136,6 @@ class PackageJson {
   }
 
   /**
-   * Returns information about where/if a package exists in the dependencies
-   * specified by the `package.json` file.
-   *
-   * @param {object} options
-   * @param {string} options.pkg
-   */
-  findDependency({ pkg }) {
-    // TODO: Implement
-    // @returns [{ version: '^1.13.2', field: 'devDependencies' }]
-  }
-
-  /**
    * Require a package to exist as a dependency in `package.json`.
    *
    * @param {object} options
@@ -234,7 +228,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Require a script to exist in the `scripts` field of `package.json`.
    *
    * @param {object} options
    * @param {string} options.lifecycleEvent
@@ -277,18 +271,7 @@ class PackageJson {
   }
 
   /**
-   *
-   * @param {object} options
-   * @param {string} options.lifecycleEvent
-   *
-   * @returns {object} - changelog entry
-   */
-  removeScript({ lifecycleEvent }) {
-    // TODO: Implement
-  }
-
-  /**
-   * ...
+   * Get all changelog entry objects.
    *
    * @returns {Array<object>}
    */
@@ -297,7 +280,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Get all changelog entries as human-friendly messages.
    *
    * @returns {Array<string>}
    */
@@ -306,17 +289,20 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Format a changelog entry as a human-friendly message.
    *
    * @returns {string}
    */
   getChangelogEntryAsMessage(entry) {
-    // TODO: Check message function exists
-    return changelogMessages[entry.event](entry);
+    if (!createChangelogMessage[entry.event]) {
+      return createChangelogMessage.fallback(event);
+    }
+
+    return createChangelogMessage[entry.event](entry);
   }
 
   /**
-   * ...
+   * Get last changelog entry object.
    *
    * @returns {object}
    */
@@ -325,7 +311,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Get last changelog entry as a human-friendly message.
    *
    * @returns {string}
    */
