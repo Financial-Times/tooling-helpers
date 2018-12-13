@@ -56,13 +56,29 @@ class Git {
 }
 
 class GitRepo {
-  constructor(repo) {
+  constructor(repo = null) {
+    this.repo = null;
+    this.workingDirectory = null;
+    this.index = null;
+
+    if (repo) {
+      this.setRepo(repo);
+    }
+  }
+
+  setRepo(repo) {
     /**
      * @type import('nodegit').Repository
      */
     this.repo = repo;
-    this.index = null;
     this.workingDirectory = this.repo.workdir();
+  }
+
+  async open(directoryPath) {
+    const repo = await NodeGit.Repository.open(directoryPath);
+    this.setRepo(repo);
+
+    return true;
   }
 
   async createBranch({ branch }) {
@@ -161,5 +177,4 @@ class GitRepo {
 module.exports = {
   Git,
   GitRepo,
-  NodeGit
 };
