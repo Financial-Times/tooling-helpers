@@ -295,7 +295,7 @@ class PackageJson {
    */
   getChangelogEntryAsMessage(entry) {
     if (!createChangelogMessage[entry.event]) {
-      return createChangelogMessage.fallback(event);
+      return createChangelogMessage.fallback(entry);
     }
 
     return createChangelogMessage[entry.event](entry);
