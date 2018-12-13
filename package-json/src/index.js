@@ -95,7 +95,9 @@ class PackageJson {
     const fieldAlreadyExists =
       typeof this.workingContents[field] !== "undefined";
 
-    changelogEntry.previousValue = this.workingContents[field];
+    if (fieldAlreadyExists) {
+      changelogEntry.previousValue = this.workingContents[field];
+    }
 
     this.workingContents[field] = value;
 
