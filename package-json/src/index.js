@@ -7,7 +7,17 @@ const dependencyFields = [
   "peerDependencies"
 ];
 
-const changelogMessages = {
+/**
+ * Functions for creating human-friendly messages from changelog objects.
+ */
+const createChangelogMessage = {
+  setField: ({ field, previousValue }) => {
+    let message = `Set value for field '${field}'`;
+    message += previousValue
+      ? ` (overwrote existing value)`
+      : " (new field)";
+    return message;
+  },
   requireDependency: ({ pkg, field, version, previousVersionRange }) => {
     let message = `Required package ${pkg}@${version} in ${field}`;
     message += previousVersionRange
@@ -25,6 +35,9 @@ const changelogMessages = {
       ? ` (overwrote existing command)`
       : " (new script)";
     return message;
+  },
+  fallback: (entry) => {
+    return JSON.stringify(entry);
   }
 };
 
@@ -70,6 +83,41 @@ class PackageJson {
   }
 
   /**
+   * Set the value for a specific field in the `package.json` object.
+   *
+   * @param {string} field
+   * @param {*} value
+   *
+   * @returns {object} - changelog entry
+   */
+  setField(field, value) {
+    const changelogEntry = {
+      event: "setField",
+      field,
+      previousValue: false,
+      written: false
+    };
+
+    const fieldAlreadyExists =
+      typeof this.workingContents[field] !== "undefined";
+
+    if (fieldAlreadyExists) {
+      changelogEntry.previousValue = this.workingContents[field];
+    }
+
+    this.workingContents[field] = value;
+
+    if (this.options.writeImmediately === true) {
+      this.write();
+      changelogEntry.written = true;
+    }
+
+    this.changelog.push(changelogEntry);
+
+    return changelogEntry;
+  }
+
+  /**
    * Write to the `package.json` file.
    *
    * @returns boolean
@@ -85,18 +133,6 @@ class PackageJson {
     }
 
     return true;
-  }
-
-  /**
-   * Returns information about where/if a package exists in the dependencies
-   * specified by the `package.json` file.
-   *
-   * @param {object} options
-   * @param {string} options.pkg
-   */
-  findDependency({ pkg }) {
-    // TODO: Implement
-    // @returns [{ version: '^1.13.2', field: 'devDependencies' }]
   }
 
   /**
@@ -192,7 +228,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Require a script to exist in the `scripts` field of `package.json`.
    *
    * @param {object} options
    * @param {string} options.lifecycleEvent
@@ -210,6 +246,7 @@ class PackageJson {
 
     const scriptsFieldExists =
       typeof this.workingContents.scripts !== "undefined";
+
     if (!scriptsFieldExists) {
       this.workingContents.scripts = {};
     }
@@ -218,6 +255,7 @@ class PackageJson {
 
     const lifecycleEventAlreadyExists =
       typeof scripts[lifecycleEvent] !== "undefined";
+
     changelogEntry.alreadyExisted = lifecycleEventAlreadyExists;
 
     scripts[lifecycleEvent] = command;
@@ -233,18 +271,7 @@ class PackageJson {
   }
 
   /**
-   *
-   * @param {object} options
-   * @param {string} options.lifecycleEvent
-   *
-   * @returns {object} - changelog entry
-   */
-  removeScript({ lifecycleEvent }) {
-    // TODO: Implement
-  }
-
-  /**
-   * ...
+   * Get all changelog entry objects.
    *
    * @returns {Array<object>}
    */
@@ -253,7 +280,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Get all changelog entries as human-friendly messages.
    *
    * @returns {Array<string>}
    */
@@ -262,17 +289,20 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Format a changelog entry as a human-friendly message.
    *
    * @returns {string}
    */
   getChangelogEntryAsMessage(entry) {
-    // TODO: Check message function exists
-    return changelogMessages[entry.event](entry);
+    if (!createChangelogMessage[entry.event]) {
+      return createChangelogMessage.fallback(entry);
+    }
+
+    return createChangelogMessage[entry.event](entry);
   }
 
   /**
-   * ...
+   * Get last changelog entry object.
    *
    * @returns {object}
    */
@@ -281,7 +311,7 @@ class PackageJson {
   }
 
   /**
-   * ...
+   * Get last changelog entry as a human-friendly message.
    *
    * @returns {string}
    */
