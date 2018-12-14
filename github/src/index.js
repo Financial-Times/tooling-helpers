@@ -1,6 +1,8 @@
 require('dotenv').config();
 
-const octokit = require('@octokit/rest')({
+const Octokit = require('@octokit/rest');
+
+const octokit = new Octokit({
 	headers: {
 		/**
 		 * Access Projects API using this Accept header while it is under preview
