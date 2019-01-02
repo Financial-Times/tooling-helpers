@@ -2,64 +2,79 @@ const { createPullRequest } = require('../index');
 const fs = require('fs');
 
 const builder = (yargs) => {
-
-	return yargs
-		.option('owner', {
-			alias: 'o',
-			describe: 'Owner',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('repo', {
-			alias: 'r',
-			describe: 'Repository',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('title', {
-			alias: 't',
-			describe: 'Pull request title',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('branch', {
-			describe: 'Branch',
-			demandOption: true,
-			type: 'string',
-		})
-		.option('base', {
-			describe: 'Base branch',
-			default: 'master',
-			type: 'string',
-		})
-		.option('body', {
-			describe: 'Path to pull request body',
-			demandOption: false,
-			type: 'string',
-		});
+    return yargs
+        .option('owner', {
+            alias: 'o',
+            describe: 'Owner',
+            demandOption: true,
+            type: 'string',
+        })
+        .option('repo', {
+            alias: 'r',
+            describe: 'Repository',
+            demandOption: true,
+            type: 'string',
+        })
+        .option('title', {
+            alias: 't',
+            describe: 'Pull request title',
+            demandOption: true,
+            type: 'string',
+        })
+        .option('branch', {
+            describe: 'Branch',
+            demandOption: true,
+            type: 'string',
+        })
+        .option('base', {
+            describe: 'Base branch',
+            default: 'master',
+            type: 'string',
+        })
+        .option('body', {
+            describe: 'Path to pull request body',
+            type: 'string',
+        });
 };
 
-const handler = async ({ owner, repo, title, branch, base, body }) => {
+const main = async ({ owner, repo, title, branch, base, body }) => {
+    const filePath = typeof body !== 'undefined';
+    const incorrectFilePath = filePath && !fs.existsSync(body);
+    const correctFilePath = filePath && fs.existsSync(body);
 
-	const pullRequestBody = fs.readFileSync(body, 'utf8');
+    if (incorrectFilePath) {
+        throw new Error(
+            `File path ${body} not found`
+        );
+    }
 
-	const pullRequest = await createPullRequest({
-		owner,
-		repo,
-		title,
-		head: branch,
-		base,
-		body: pullRequestBody
-	});
+    const pullRequestBody = correctFilePath ? fs.readFileSync(body, 'utf8') : undefined;
 
-	console.log(pullRequest.id);
+    const pullRequest = await createPullRequest({
+        owner,
+        repo,
+        title,
+        head: branch,
+        base,
+        body: pullRequestBody
+    });
+
+    console.log(pullRequest.id);
+};
+
+const handler = async (argv) => {
+    try {
+        await main(argv);
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 module.exports = {
-	command: 'pull-request:create',
-	desc: 'Create a new pull request',
-	builder,
-	handler,
+    command: 'pull-request:create',
+    desc: 'Create a new pull request',
+    builder,
+    handler,
 };
 
 

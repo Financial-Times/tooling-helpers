@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 require('yargs')
-	.commandDir('commands')
-	.demandCommand()
-	.help()
-	.argv;
+    .commandDir('commands')
+    .demandCommand()
+    .help()
+    .argv;
