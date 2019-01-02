@@ -4,7 +4,7 @@ const columnFixture = require('../../../__mocks__/@octokit/fixtures/createColumn
 
 const pullRequestFixture = require('../../../__mocks__/@octokit/fixtures/createCard');
 
-const addPullRequestCommand = require('../../src/commands/project-add-pull-request');
+const addPullRequestCommand = require('../../src/commands/create-card');
 
 jest.spyOn(global.console, 'warn')
     .mockImplementation((message) => message);

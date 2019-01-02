@@ -2,7 +2,7 @@ const yargs = require('yargs');
 
 const organisationFixture = require('../../../__mocks__/@octokit/fixtures/createForOrg');
 
-const createProjectCommand = require('../../src/commands/project-create');
+const createProjectCommand = require('../../src/commands/create-project');
 
 jest.spyOn(global.console, 'warn')
     .mockImplementation((message) => message);

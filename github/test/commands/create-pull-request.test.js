@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 
-const createPullRequestCommand = require('../../src/commands/pull-request-create');
+const createPullRequestCommand = require('../../src/commands/create-pull-request');
 
 jest.spyOn(global.console, 'warn')
     .mockImplementation((message) => message);
