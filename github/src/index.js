@@ -25,9 +25,8 @@ octokit.authenticate({
 
 const createProject = require('./create-project')(octokit);
 const createProjectColumn = require('./create-project-column')(octokit);
-const createNoteCard = require('./create-note-card')(octokit);
 const createPullRequest = require('./create-pull-request')(octokit);
-const createPullRequestCard = require('./create-pull-request-card')(octokit);
+const createPullRequestCard = require('./create-card')(octokit);
 
 module.exports = {
     createProject,
