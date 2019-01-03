@@ -60,7 +60,7 @@ const main = async ({ org, name }) => {
     const json = JSON.stringify(details);
 
     // Print JSON string to console which allows user to copy/save column IDs
-    // Column IDs are needed to add pull requests to an organisation's board
+    // Column IDs are needed to add pull requests to an organisation's project
     console.log(json);
 };
 
