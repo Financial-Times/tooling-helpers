@@ -1,5 +1,10 @@
 const { createPullRequestCard } = require('../index');
 
+/**
+ * yargs builder function.
+ *
+ * @param {import('yargs').Yargs} yargs - Instance of yargs
+ */
 const builder = (yargs) => {
     return yargs
         .option('column', {
@@ -14,6 +19,13 @@ const builder = (yargs) => {
         });
 };
 
+/**
+ * Add a pull request to an organisation's project.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ * @param {number} argv.column
+ * @param {number} argv.pullRequest
+ */
 const main = async ({ column, pullRequest }) => {
     await createPullRequestCard({
         column_id: column,
@@ -22,10 +34,14 @@ const main = async ({ column, pullRequest }) => {
     });
 };
 
+/**
+ * yargs handler function logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const handler = async (argv) => {
     try {
         await main(argv)
-
     } catch (error) {
         console.error(error);
     }
@@ -37,5 +53,3 @@ module.exports = {
     builder,
     handler,
 };
-
-

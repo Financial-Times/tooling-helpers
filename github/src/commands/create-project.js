@@ -1,5 +1,10 @@
 const { createProject, createProjectColumn } = require('../index');
 
+/**
+ * yargs builder function.
+ *
+ * @param {import('yargs').Yargs} yargs - Instance of yargs
+ */
 const builder = (yargs) => {
     return yargs
         .option('org', {
@@ -16,6 +21,13 @@ const builder = (yargs) => {
         });
 };
 
+/**
+ * Create an organisation project with columns.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ * @param {string} argv.org
+ * @param {string} argv.name
+ */
 const main = async ({ org, name }) => {
     const project = await createProject({ org, name });
 
@@ -34,6 +46,7 @@ const main = async ({ org, name }) => {
         name: 'Done'
     });
 
+    // Create an object that resembles a JSON structure
     const details = {
         project: project.id,
         columns: {
@@ -43,15 +56,22 @@ const main = async ({ org, name }) => {
         }
     };
 
+    // Convert object to JSON string
     const json = JSON.stringify(details);
 
+    // Print JSON string to console which allows user to copy/save column IDs
+    // Column IDs are needed to add pull requests to an organisation's board
     console.log(json);
 };
 
+/**
+ * yargs handler function logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const handler = async (argv) => {
     try {
         await main(argv);
-
     } catch (error) {
         console.error(error);
     }

@@ -1,6 +1,11 @@
 const { createPullRequest } = require('../index');
 const fs = require('fs');
 
+/**
+ * yargs builder function.
+ *
+ * @param {import('yargs').Yargs} yargs - Instance of yargs
+ */
 const builder = (yargs) => {
     return yargs
         .option('owner', {
@@ -37,6 +42,18 @@ const builder = (yargs) => {
         });
 };
 
+/**
+ * Return the contents of a pull request body and create a pull request.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ * @param {string} argv.owner
+ * @param {string} argv.repo
+ * @param {string} argv.title
+ * @param {string} argv.branch
+ * @param {string} [argv.base]
+ * @param {string} [argv.body]
+ * @throws {Error} - Throws an error if `body` is invalid
+ */
 const main = async ({ owner, repo, title, branch, base, body }) => {
     const filePath = typeof body !== 'undefined';
     const incorrectFilePath = filePath && !fs.existsSync(body);
@@ -62,6 +79,11 @@ const main = async ({ owner, repo, title, branch, base, body }) => {
     console.log(pullRequest.id);
 };
 
+/**
+ * yargs handler function logic.
+ *
+ * @param {object} argv - argv parsed and filtered by yargs
+ */
 const handler = async (argv) => {
     try {
         await main(argv);

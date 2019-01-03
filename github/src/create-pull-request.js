@@ -1,7 +1,7 @@
 module.exports = (octokit) => {
     return async ({ owner, repo, title, head, base, body }) => {
         /**
-         * Create a GitHub pull request
+         * Create a GitHub pull request.
          *
          * @see https://octokit.github.io/rest.js/#api-Pulls-create
          */
