@@ -56,7 +56,6 @@ const main = async ({ org, name }) => {
         }
     };
 
-    // Convert object to JSON string
     const json = JSON.stringify(details);
 
     // Print JSON string to console which allows user to copy/save column IDs
