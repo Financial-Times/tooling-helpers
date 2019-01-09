@@ -28,7 +28,12 @@ const builder = (yargs) => {
  * @param {string} argv.org
  * @param {string} argv.name
  */
-const main = async ({ org, name }) => {
+const handler = async ({ org, name }) => {
+
+    if (!org || !name) {
+        throw new Error('Organisation and project name must be provided');
+    }
+
     const project = await createProject({ org, name });
 
     const toDoColumn = await createProjectColumn({
@@ -61,19 +66,6 @@ const main = async ({ org, name }) => {
     // Print JSON string to console which allows user to copy/save column IDs
     // Column IDs are needed to add pull requests to an organisation's project
     console.log(json);
-};
-
-/**
- * yargs handler function logic.
- *
- * @param {object} argv - argv parsed and filtered by yargs
- */
-const handler = async (argv) => {
-    try {
-        await main(argv);
-    } catch (error) {
-        console.error(error);
-    }
 };
 
 module.exports = {

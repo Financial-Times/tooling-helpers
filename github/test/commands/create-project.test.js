@@ -7,9 +7,6 @@ const createProjectCommand = require('../../src/commands/create-project');
 jest.spyOn(global.console, 'warn')
     .mockImplementation((message) => message);
 
-jest.spyOn(global.console, 'error')
-    .mockImplementation((message) => message);
-
 afterEach(() => {
     jest.resetAllMocks();
 });
@@ -36,25 +33,24 @@ test('yargs can load the `project:create` command without any errors or warnings
     expect(console.warn).not.toBeCalled();
 });
 
-// test('running command handler without `name` will exit process with error', async () => {
-//     await createProjectCommand.handler({
-//         org: organisationFixture.creator.login,
-//     });
-//     expect(console.error).toHaveBeenCalled();
-// });
-
-// test('running command handler without `org` will exit process with error', async () => {
-//     await createProjectCommand.handler({
-//         name: organisationFixture.name
-//     });
-//     expect(console.error).toHaveBeenCalled();
-// });
-
-test('running command handler with valid options will not exit process with error', async () => {
-    await createProjectCommand.handler({
-        org: organisationFixture.creator.login,
-        name: organisationFixture.name
-    });
-    expect(console.error).not.toHaveBeenCalled();
+test('running command handler without `org` to throw', async () => {
+    expect.assertions(1);
+    try {
+        await createProjectCommand.handler({
+            name: organisationFixture.name
+        });
+    } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+    }
 });
 
+test('running command handler without `name` to throw', async () => {
+    expect.assertions(1);
+    try {
+        await createProjectCommand.handler({
+            org: organisationFixture.creator.login
+        });
+    } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+    }
+});
