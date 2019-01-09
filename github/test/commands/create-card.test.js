@@ -2,14 +2,11 @@ const yargs = require('yargs');
 
 const columnFixture = require('../../../__mocks__/@octokit/fixtures/createColumn');
 
-const pullRequestFixture = require('../../../__mocks__/@octokit/fixtures/createCard');
+const cardFixture = require('../../../__mocks__/@octokit/fixtures/createCard');
 
 const addPullRequestCommand = require('../../src/commands/create-card');
 
 jest.spyOn(global.console, 'warn')
-    .mockImplementation((message) => message);
-
-jest.spyOn(global.console, 'error')
     .mockImplementation((message) => message);
 
 afterEach(() => {
@@ -38,25 +35,27 @@ test('yargs can load the `project:add-pull-request` command without any errors o
     expect(console.warn).not.toBeCalled();
 });
 
-// test('running command handler without `column` will exit process with error', async () => {
-//     await addPullRequestCommand.handler({
-//         column: columnFixture.id
-//     });
-//     expect(console.error).toHaveBeenCalled();
-// });
+test('running command handler with a `column` ID as a string is expected to throw', async () => {
+    expect.assertions(1);
+    try {
+        await addPullRequestCommand.handler({
+            column: 'ID',
+            pullRequest: cardFixture.id
+        });
+    } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+    }
+});
 
-// test('running command handler without `pull-request` will exit process with error', async () => {
-//   await addPullRequestCommand.handler({
-//     pullRequest: pullRequestFixture.id
-//   });
-//   expect(console.error).toHaveBeenCalled();
-// });
-
-test('running command handler with valid options will not exit process with error', async () => {
-  await addPullRequestCommand.handler({
-    column: columnFixture.id,
-    pullRequest: pullRequestFixture.id
-  });
-  expect(console.error).not.toHaveBeenCalled();
+test('running command handler with a `pullRequest` ID as a string is expected to throw', async () => {
+    expect.assertions(1);
+    try {
+        await addPullRequestCommand.handler({
+            column: columnFixture.id,
+            pullRequest: 'ID'
+        });
+    } catch (error) {
+        expect(error).toBeInstanceOf(Error);
+    }
 });
 

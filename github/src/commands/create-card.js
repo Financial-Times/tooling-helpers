@@ -10,12 +10,12 @@ const builder = (yargs) => {
         .option('column', {
             describe: 'Project column ID',
             demandOption: true,
-            type: 'integer',
+            type: 'number',
         })
         .option('pull-request', {
             describe: 'Pull request ID',
             demandOption: true,
-            type: 'integer',
+            type: 'number',
         });
 };
 
@@ -26,7 +26,12 @@ const builder = (yargs) => {
  * @param {number} argv.column
  * @param {number} argv.pullRequest
  */
-const main = async ({ column, pullRequest }) => {
+const handler = async ({ column, pullRequest }) => {
+
+    if (isNaN(column) || isNaN(pullRequest)) {
+        throw new Error('Column and pull request ID must be a number');
+    }
+
     await createPullRequestCard({
         column_id: column,
         content_id: pullRequest,
@@ -34,22 +39,9 @@ const main = async ({ column, pullRequest }) => {
     });
 };
 
-/**
- * yargs handler function logic.
- *
- * @param {object} argv - argv parsed and filtered by yargs
- */
-const handler = async (argv) => {
-    try {
-        await main(argv)
-    } catch (error) {
-        console.error(error);
-    }
-};
-
 module.exports = {
     command: 'project:add-pull-request',
     desc: 'Add a pull request to a project',
     builder,
-    handler,
+    handler
 };
