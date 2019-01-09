@@ -14,7 +14,7 @@ const octokit = new Octokit({
 });
 
 /**
- * Authenicate GitHub API calls using GitHub personal access token
+ * Authenticate GitHub API calls using GitHub personal access token
  *
  * @see https://github.com/octokit/rest.js#authentication
  */
