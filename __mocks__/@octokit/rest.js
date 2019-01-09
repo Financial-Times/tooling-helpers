@@ -9,9 +9,12 @@ Octokit.prototype.authenticate = jest.fn();
 
 Octokit.prototype.projects = {
     createForOrg: () => ({ data: createForOrgResponse }),
-    create: () => ({ data: createResponse }),
     createCard: () => ({ data: createCardResponse }),
     createColumn: () => ({ data: createColumnResponse })
+}
+
+Octokit.prototype.pulls = {
+    create: () => ({ data: createResponse })
 }
 
 module.exports = Octokit;
