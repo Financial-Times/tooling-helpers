@@ -54,15 +54,17 @@ const builder = (yargs) => {
  * @param {string} [argv.body]
  * @throws {Error} - Throws an error if `body` is invalid
  */
-const main = async ({ owner, repo, title, branch, base, body }) => {
-    const filePath = typeof body !== 'undefined';
-    const incorrectFilePath = filePath && !fs.existsSync(body);
-    const correctFilePath = filePath && fs.existsSync(body);
+const handler = async ({ owner, repo, title, branch, base, body }) => {
+    const filePathProvided = typeof body !== 'undefined';
+    const incorrectFilePath = filePathProvided && !fs.existsSync(body);
+    const correctFilePath = filePathProvided && fs.existsSync(body);
+
+    if (!owner || !repo || !title || !branch) {
+        throw new Error('Owner, repo, title and branch must be provided');
+    }
 
     if (incorrectFilePath) {
-        throw new Error(
-            `File path ${body} not found`
-        );
+        throw new Error(`File path ${body} not found`);
     }
 
     const pullRequestBody = correctFilePath ? fs.readFileSync(body, 'utf8') : undefined;
@@ -76,20 +78,7 @@ const main = async ({ owner, repo, title, branch, base, body }) => {
         body: pullRequestBody
     });
 
-    console.log(pullRequest.id);
-};
-
-/**
- * yargs handler function logic.
- *
- * @param {object} argv - argv parsed and filtered by yargs
- */
-const handler = async (argv) => {
-    try {
-        await main(argv);
-    } catch (error) {
-        console.error(error);
-    }
+    console.log('Pull request ID: ', pullRequest.id);
 };
 
 module.exports = {
@@ -98,5 +87,3 @@ module.exports = {
     builder,
     handler,
 };
-
-
