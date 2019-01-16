@@ -25,6 +25,9 @@ const { Git, GitRepo } = require('@financial-times/tooling-helpers').git;
 
 See [git/src/index.js](git/src/index.js) for available methods.
 
+_Note:_ Requires a [GitHub personal access token](#github-personal-access-token-security) with `repo` scope to be able to
+clone and push to private remote repositories.
+
 ## `PackageJson` helper
 
 The `PackageJson` helper exports a single class:
@@ -34,3 +37,10 @@ const { PackageJson } = require('@financial-times/tooling-helpers');
 ```
 
 See [package-json/src/index.js](package-json/src/index.js) for available methods.
+
+## GitHub personal access token security
+
+Some of the tooling helpers require a GitHub personal access token with all
+`repo` scopes. This is _very powerful_ as it has access to modify a
+repository's settings, so it is strongly recommended that you follow the guide
+on [How to store and access a GitHub personal access token securely](https://github.com/Financial-Times/next/wiki/How-to-store-and-access-a-GitHub-personal-access-token-securely).
