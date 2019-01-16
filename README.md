@@ -38,6 +38,10 @@ const { PackageJson } = require('@financial-times/tooling-helpers');
 
 See [package-json/src/index.js](package-json/src/index.js) for available methods.
 
+## `GitHub` helper
+
+See [github/src/commands](github/src/commands) for available methods.
+
 ## GitHub personal access token security
 
 Some of the tooling helpers require a GitHub personal access token with all

@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
+  },
+  "bin": {
+    "github": "./github/src/cli.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +20,12 @@
   },
   "homepage": "https://github.com/Financial-Times/tooling-helpers#readme",
   "dependencies": {
-    "nodegit": "^0.23.0"
+    "nodegit": "^0.23.0",
+    "@octokit/rest": "^16.0.1",
+    "dotenv": "^6.1.0",
+    "yargs": "^12.0.5"
+  },
+  "devDependencies": {
+    "jest": "^23.6.0"
   }
 }
