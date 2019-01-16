@@ -32,11 +32,17 @@ const handler = async ({ column, pullRequest }) => {
         throw new Error('Column and pull request ID must be a number');
     }
 
-    await createPullRequestCard({
+    const inputs = {
         column_id: column,
         content_id: pullRequest,
         content_type: 'PullRequest'
-    });
+    };
+
+    try {
+        await createPullRequestCard(inputs);
+    } catch (error) {
+        throw new Error(`Adding a pull request to a project failed. Response: ${error}.`)
+    }
 };
 
 module.exports = {

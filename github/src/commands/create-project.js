@@ -31,25 +31,34 @@ const builder = (yargs) => {
 const handler = async ({ org, name }) => {
 
     if (!org || !name) {
-        throw new Error('Organisation and project name must be provided');
+        throw new Error(
+            'Organisation (--org) and project name (--name) must be provided'
+        );
     }
 
-    const project = await createProject({ org, name });
+    const createProjectError = (error) => {
+        throw new Error(`Creating a project failed. Response: ${error}.`)
+    };
+
+    const project = await createProject({
+        org,
+        name
+    }).catch(createProjectError);
 
     const toDoColumn = await createProjectColumn({
         project_id: project.id,
         name: 'To do'
-    });
+    }).catch(createProjectError);
 
     const inProgressColumn = await createProjectColumn({
         project_id: project.id,
         name: 'In progress'
-    });
+    }).catch(createProjectError);
 
     const doneColumn = await createProjectColumn({
         project_id: project.id,
         name: 'Done'
-    });
+    }).catch(createProjectError);
 
     // Create an object that resembles a JSON structure
     const details = {

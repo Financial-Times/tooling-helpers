@@ -68,17 +68,21 @@ const handler = async ({ owner, repo, title, branch, base, body }) => {
     }
 
     const pullRequestBody = correctFilePath ? fs.readFileSync(body, 'utf8') : undefined;
-
-    const pullRequest = await createPullRequest({
+    const inputs = {
         owner,
         repo,
         title,
         head: branch,
         base,
         body: pullRequestBody
-    });
+    };
 
-    console.log('Pull request ID: ', pullRequest.id);
+    try {
+        const pullRequest = await createPullRequest(inputs);
+        console.log('Pull request ID: ', pullRequest.id);
+    } catch(error) {
+        throw new Error(`Creating a pull request failed. Response: ${error}.`)
+    }
 };
 
 module.exports = {
