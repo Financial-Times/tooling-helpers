@@ -5,7 +5,7 @@
 ## Available helpers
 
 - [git](git/src/index.js)
-- [PackageJson](package-json/src/index.js)
+- [package-json](package-json/src/index.js)
 
 ## Usage
 
@@ -17,10 +17,10 @@ npm install Financial-Times/tooling-helpers
 
 ## `git` helper
 
-The `git` helper exports two classes:
+The `git` helper exports a single class:
 
-```javsacript
-const { Git, GitRepo } = require('@financial-times/tooling-helpers').git;
+```javascript
+const { Git } = require('@financial-times/tooling-helpers');
 ```
 
 See [git/src/index.js](git/src/index.js) for available methods.
@@ -28,11 +28,11 @@ See [git/src/index.js](git/src/index.js) for available methods.
 _Note:_ Requires a [GitHub personal access token](#github-personal-access-token-security) with `repo` scope to be able to
 clone and push to private remote repositories.
 
-## `PackageJson` helper
+## `package-json` helper
 
-The `PackageJson` helper exports a single class:
+The `package-json` helper exports a single class:
 
-```javsacript
+```javascript
 const { PackageJson } = require('@financial-times/tooling-helpers');
 ```
 
