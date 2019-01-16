@@ -1,84 +1,84 @@
 const NodeGit = require("nodegit");
 
-const remoteCallbacks = {
-  /**
-   * Workaround for GitHub certificate issue in OS X
-   *
-   * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
-   */
-  certificateCheck: () => {
-    return 1;
-  },
-  credentials: () => {
-    if (!process.env.GITHUB_TOKEN) {
-      throw new Error(
-        "Missing environment variable GITHUB_TOKEN - please set this!"
+const generateRemoteCallbacks = (credentials) => {
+
+  if (typeof credentials === 'undefined') {
+    return {};
+  }
+
+  if (credentials.type !== Git.CREDENTIAL_TYPE_GITHUB_OAUTH) {
+    throw new Error(`Git: Unsupported credentials type '${credentials.type}'`);
+  }
+
+  return {
+    /**
+     * Workaround for GitHub certificate issue in OS X.
+     *
+     * @see https://www.nodegit.org/guides/cloning/gh-two-factor/
+     */
+    certificateCheck: () => 1,
+    credentials: () => {
+      return NodeGit.Cred.userpassPlaintextNew(
+        credentials.token,
+        "x-oauth-basic"
       );
     }
-    return NodeGit.Cred.userpassPlaintextNew(
-      process.env.GITHUB_TOKEN,
-      "x-oauth-basic"
-    );
-  }
-};
-
-const cloneOptions = {
-  fetchOpts: {
-    callbacks: remoteCallbacks
-  }
-};
-
-const pushOptions = {
-  callbacks: remoteCallbacks
+  };
 };
 
 class Git {
-  constructor() {}
+  constructor({ credentials } = {}) {
+    const remoteCallbacks = generateRemoteCallbacks(credentials);
+
+    this.cloneOptions = { fetchOpts: { callbacks: remoteCallbacks } };
+    this.pushOptions = { callbacks: remoteCallbacks };
+  }
 
   /**
-   * Clone a GitHub repository via HTTPS
+   * Clone a GitHub repository via HTTPS.
    *
-   * @param {string} fullRepoName
+   * @param {object} options
+   * @param {string} options.repository - Remote URL for a repository
+   * @param {string} options.directory - Local directory to clone repository to
    * @returns {import('nodegit').Repository}
    */
   async clone({ repository, directory }) {
     /**
      * @type import('nodegit').Repository
      */
-    const repo = await NodeGit.Clone(repository, directory, cloneOptions).catch(
+    const repo = await NodeGit.Clone(repository, directory, this.cloneOptions).catch(
       err => {
         throw err;
       }
     );
 
-    return new GitRepo(repo);
+    return new GitRepo({ repo, pushOptions: this.pushOptions });
+  }
+
+  /**
+   * Open a local git repository.
+   *
+   * @param {string} directoryPath - Path to directory containing git repository
+   * @returns {import('nodegit').Repository}
+   */
+  async open(directoryPath) {
+    const repo = await NodeGit.Repository.open(directoryPath);
+
+    return new GitRepo({ repo, pushOptions: this.pushOptions });
   }
 }
 
+Git.CREDENTIAL_TYPE_GITHUB_OAUTH = 1;
+
 class GitRepo {
-  constructor(repo = null) {
-    this.repo = null;
-    this.workingDirectory = null;
-    this.index = null;
-
-    if (repo) {
-      this.setRepo(repo);
-    }
-  }
-
-  setRepo(repo) {
-    /**
-     * @type import('nodegit').Repository
-     */
+  /**
+   * @param {import('nodegit').Repository} repo
+   */
+  constructor({ repo, pushOptions }) {
     this.repo = repo;
     this.workingDirectory = this.repo.workdir();
-  }
-
-  async open(directoryPath) {
-    const repo = await NodeGit.Repository.open(directoryPath);
-    this.setRepo(repo);
-
-    return true;
+    this.index = null;
+    this.pushOptions = pushOptions;
   }
 
   async createBranch({ branch }) {
@@ -164,13 +164,10 @@ class GitRepo {
     const remoteObject = await this.repo.getRemote(remote);
     const refSpec = `${referenceName}:${referenceName}`;
 
-    await remoteObject.push([refSpec], pushOptions);
+    await remoteObject.push([refSpec], this.pushOptions);
 
     return true;
   }
 }
 
-module.exports = {
-  Git,
-  GitRepo,
-};
+module.exports = Git;
