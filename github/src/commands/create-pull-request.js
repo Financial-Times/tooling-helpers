@@ -1,5 +1,6 @@
-const { createPullRequest } = require('../index');
 const fs = require('fs');
+
+const github = require('../index');
 
 /**
  * yargs builder function.
@@ -39,6 +40,11 @@ const builder = (yargs) => {
         .option('body', {
             describe: 'Path to pull request body',
             type: 'string',
+        })
+        .option('token', {
+            describe: 'GitHub personal access token',
+            demandOption: true,
+            type: 'string',
         });
 };
 
@@ -46,6 +52,7 @@ const builder = (yargs) => {
  * Return the contents of a pull request body and create a pull request.
  *
  * @param {object} argv - argv parsed and filtered by yargs
+ * @param {string} argv.token
  * @param {string} argv.owner
  * @param {string} argv.repo
  * @param {string} argv.title
@@ -54,7 +61,7 @@ const builder = (yargs) => {
  * @param {string} [argv.body]
  * @throws {Error} - Throws an error if `body` is invalid
  */
-const handler = async ({ owner, repo, title, branch, base, body }) => {
+const handler = async ({ token, owner, repo, title, branch, base, body }) => {
     const filePathProvided = typeof body !== 'undefined';
     const incorrectFilePath = filePathProvided && !fs.existsSync(body);
     const correctFilePath = filePathProvided && fs.existsSync(body);
@@ -66,6 +73,10 @@ const handler = async ({ owner, repo, title, branch, base, body }) => {
     if (incorrectFilePath) {
         throw new Error(`File path ${body} not found`);
     }
+
+    const { createPullRequest } = github({
+        personalAccessToken: token
+    });
 
     const pullRequestBody = correctFilePath ? fs.readFileSync(body, 'utf8') : undefined;
     const inputs = {

@@ -1,4 +1,4 @@
-const { createProject, createProjectColumn } = require('../index');
+const github = require('../index');
 
 /**
  * yargs builder function.
@@ -18,6 +18,11 @@ const builder = (yargs) => {
             describe: 'Project name',
             demandOption: true,
             type: 'string',
+        })
+        .option('token', {
+            describe: 'GitHub personal access token',
+            demandOption: true,
+            type: 'string',
         });
 };
 
@@ -25,10 +30,11 @@ const builder = (yargs) => {
  * Create an organisation project with columns.
  *
  * @param {object} argv - argv parsed and filtered by yargs
+ * @param {string} argv.token
  * @param {string} argv.org
  * @param {string} argv.name
  */
-const handler = async ({ org, name }) => {
+const handler = async ({ token, org, name }) => {
 
     if (!org || !name) {
         throw new Error(
@@ -39,6 +45,10 @@ const handler = async ({ org, name }) => {
     const createProjectError = (error) => {
         throw new Error(`Creating a project failed. Response: ${error}.`)
     };
+
+    const { createProject, createProjectColumn } = github({
+        personalAccessToken: token
+    });
 
     const project = await createProject({
         org,
