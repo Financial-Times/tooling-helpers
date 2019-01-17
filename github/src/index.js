@@ -2,6 +2,10 @@ const Octokit = require('@octokit/rest');
 
 module.exports = ({ personalAccessToken }) => {
 
+    if (!personalAccessToken) {
+        throw new Error('github tooling helper: Missing personalAccessToken option - https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/');
+    }
+
     const octokit = new Octokit({
         headers: {
             /**
