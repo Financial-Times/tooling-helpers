@@ -1,4 +1,4 @@
-const { createPullRequestCard } = require('../index');
+const github = require('../index');
 
 /**
  * yargs builder function.
@@ -16,6 +16,11 @@ const builder = (yargs) => {
             describe: 'Pull request ID',
             demandOption: true,
             type: 'number',
+        })
+        .option('token', {
+            describe: 'GitHub personal access token',
+            demandOption: true,
+            type: 'string',
         });
 };
 
@@ -23,14 +28,19 @@ const builder = (yargs) => {
  * Add a pull request to an organisation's project.
  *
  * @param {object} argv - argv parsed and filtered by yargs
+ * @param {string} argv.token
  * @param {number} argv.column
  * @param {number} argv.pullRequest
  */
-const handler = async ({ column, pullRequest }) => {
+const handler = async ({ token, column, pullRequest }) => {
 
     if (isNaN(column) || isNaN(pullRequest)) {
         throw new Error('Column and pull request ID must be a number');
     }
+
+    const { createPullRequestCard } = github({
+        personalAccessToken: token
+    });
 
     const inputs = {
         column_id: column,
