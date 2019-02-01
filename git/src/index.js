@@ -1,6 +1,9 @@
 const { GitProcess } = require('dugite');
 const gitExec = GitProcess.exec;
 
+const constructCommandArgs = require('./helpers/construct-command-args');
+const handleGitExecResult = require('./helpers/handle-git-exec-result');
+
 /**
  * Clone a repository into a new directory.
  *
