@@ -2,6 +2,7 @@ const { GitProcess } = require('dugite');
 const gitExec = GitProcess.exec;
 
 const constructCommandArgs = require('./helpers/construct-command-args');
+const defaults = require('./helpers/defaults');
 const handleGitExecResult = require('./helpers/handle-git-exec-result');
 
 /**
@@ -26,9 +27,10 @@ async function clone({ repository, directory, origin = null, branch = null }) {
  *
  * @param {object} options
  * @param {string} options.name - @see https://git-scm.com/docs/git-branch#git-branch-ltbranchnamegt
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function createBranch({ name }) {
+async function createBranch({ name, workingDirectory = defaults.workingDirectory }) {
     throw new Error('Method not yet implemented');
 }
 
@@ -39,9 +41,10 @@ async function createBranch({ name }) {
  *
  * @param {object} options
  * @param {string} options.name
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function checkoutBranch({ name }) {
+async function checkoutBranch({ name, workingDirectory = defaults.workingDirectory  }) {
     throw new Error('Method not yet implemented');
 }
 
@@ -52,9 +55,10 @@ async function checkoutBranch({ name }) {
  *
  * @param {object} options
  * @param {string|array} options.files - Pass a string for a single file or an array for multiple files
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function add({ files }) {
+async function add({ files, workingDirectory = defaults.workingDirectory  }) {
     throw new Error('Method not yet implemented');
 }
 
@@ -65,9 +69,10 @@ async function add({ files }) {
  *
  * @param {object} options
  * @param {string|array} options.files - Pass a string for a single file or an array for multiple files
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function rm({ files }) {
+async function rm({ files, workingDirectory = defaults.workingDirectory  }) {
     throw new Error('Method not yet implemented');
 }
 
@@ -78,9 +83,10 @@ async function rm({ files }) {
  *
  * @param {object} options
  * @param {string} options.message
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function commit({ message }) {
+async function commit({ message, workingDirectory = defaults.workingDirectory  }) {
     throw new Error('Method not yet implemented');
 }
 
@@ -91,9 +97,10 @@ async function commit({ message }) {
  *
  * @param {object} options
  * @param {string} options.refspec - @see https://git-scm.com/docs/git-push#git-push-ltrefspecgt82308203
+ * @param {string} options.workingDirectory - Directory path to execute git command in
  * @returns {Error}
  */
-async function push({ refspec = null, repository = null } = {}) {
+async function push({ refspec = null, repository = null, workingDirectory = defaults.workingDirectory } = {}) {
     throw new Error('Method not yet implemented');
 }
 
@@ -104,6 +111,7 @@ async function push({ refspec = null, repository = null } = {}) {
  * interface.
  */
 module.exports = {
+    defaults,
     clone,
     createBranch,
     checkoutBranch,
