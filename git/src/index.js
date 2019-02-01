@@ -1,9 +1,10 @@
+const assert = require('assert');
 const { GitProcess } = require('dugite');
-const gitExec = GitProcess.exec;
+const dugiteExec = GitProcess.exec;
 
-const constructCommandArgs = require('./helpers/construct-command-args');
+const constructDugiteExecArgs = require('./helpers/construct-dugite-exec-args');
 const defaults = require('./helpers/defaults');
-const handleGitExecResult = require('./helpers/handle-git-exec-result');
+const handleDugiteExecResult = require('./helpers/handle-dugite-exec-result');
 
 /**
  * Clone a repository into a new directory.
@@ -15,9 +16,31 @@ const handleGitExecResult = require('./helpers/handle-git-exec-result');
  * @param {string} options.directory - @see https://git-scm.com/docs/git-clone#git-clone-ltdirectorygt
  * @param {string} options.origin - @see https://git-scm.com/docs/git-clone#git-clone--oltnamegt
  * @param {string} options.branch - @see https://git-scm.com/docs/git-clone#git-clone--bltnamegt
+ * @returns {boolean}
  */
-async function clone({ repository, directory, origin = null, branch = null }) {
-    throw new Error('Method not yet implemented');
+async function clone({ repository, directory, origin = '', branch = '' } = {}) {
+
+    try {
+        assert(repository, 'repository is invalid');
+        assert(directory, 'directory is invalid');
+        assert(typeof origin === 'string', 'origin must be a string');
+        assert(typeof branch === 'string', 'branch must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'clone',
+        options: {
+            '--origin': origin,
+            '--branch': branch
+        },
+        positional: [repository, directory]
+    });
+
+    const dugiteExecResult = await dugiteExec(dugiteExecArgs, defaults.workingDirectory);
+
+    return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs });
 }
 
 /**
