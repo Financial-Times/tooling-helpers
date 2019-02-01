@@ -1,6 +1,5 @@
-/**
- * This module provides methods for executing common git operations.
- */
+const { GitProcess } = require('dugite');
+const gitExec = GitProcess.exec;
 
 /**
  * Clone a repository into a new directory.
@@ -95,6 +94,12 @@ async function push({ refspec = null, repository = null } = {}) {
     throw new Error('Method not yet implemented');
 }
 
+/**
+ * This module provides methods for executing common git operations.
+ * It is a thin wrapper around dugite (https://github.com/desktop/dugite),
+ * which provides JavaScript bindings for interacting with the git command line
+ * interface.
+ */
 module.exports = {
     clone,
     createBranch,
