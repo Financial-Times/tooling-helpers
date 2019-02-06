@@ -138,6 +138,40 @@ async function add({ files, workingDirectory = defaults.workingDirectory  } = {}
 }
 
 /**
+ * Remove files from the working tree and from the index.
+ *
+ * @see https://git-scm.com/docs/git-rm
+ *
+ * @param {object} options
+ * @param {string|array} options.files - Pass a string for a single file or an array for multiple files
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @returns {boolean}
+ */
+async function rm({ files, workingDirectory = defaults.workingDirectory  } = {}) {
+    const singleFile = (typeof files === 'string' && files);
+    if (singleFile) {
+        files = [files];
+    }
+
+    try {
+        const validFilesArray = (files.constructor === Array && files.length > 0);
+        assert(validFilesArray, 'files is invalid');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'rm',
+        positional: files
+    });
+
+    const dugiteExecResult = await dugiteExec(dugiteExecArgs, workingDirectory);
+
+    return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs, workingDirectory });
+}
+
+/**
  * This module provides methods for executing common git operations.
  * It is a thin wrapper around dugite (https://github.com/desktop/dugite),
  * which provides JavaScript bindings for interacting with the git command line
@@ -149,4 +183,5 @@ module.exports = {
     createBranch,
     checkoutBranch,
     add,
+    rm,
 };
