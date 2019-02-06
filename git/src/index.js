@@ -210,6 +210,36 @@ async function commit({ message, workingDirectory = defaults.workingDirectory  }
 }
 
 /**
+ * Update remote refs along with associated objects.
+ *
+ * @see https://git-scm.com/docs/git-push
+ *
+ * @param {object} options
+ * @param {string} options.repository - @see https://git-scm.com/docs/git-push#git-push-ltrepositorygt
+ * @param {string} options.refspec - @see https://git-scm.com/docs/git-push#git-push-ltrefspecgt82308203
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @returns {boolean}
+ */
+async function push({ repository = '', refspec = '', workingDirectory = defaults.workingDirectory } = {}) {
+    try {
+        assert(typeof repository === 'string', 'repository is invalid');
+        assert(typeof refspec === 'string', 'refspec is invalid');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'push',
+        positional: [repository, refspec]
+    });
+
+    const dugiteExecResult = await dugiteExec(dugiteExecArgs, workingDirectory);
+
+    return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs, workingDirectory });
+}
+
+/**
  * This module provides methods for executing common git operations.
  * It is a thin wrapper around dugite (https://github.com/desktop/dugite),
  * which provides JavaScript bindings for interacting with the git command line
@@ -223,4 +253,5 @@ module.exports = {
     add,
     rm,
     commit,
+    push,
 };
