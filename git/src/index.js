@@ -172,6 +172,44 @@ async function rm({ files, workingDirectory = defaults.workingDirectory  } = {})
 }
 
 /**
+ * Record changes to the repository.
+ *
+ * @see https://git-scm.com/docs/git-commit
+ *
+ * @param {object} options
+ * @param {string} options.message
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @returns {boolean}
+ */
+async function commit({ message, workingDirectory = defaults.workingDirectory  } = {}) {
+    try {
+        assert(message && typeof message === 'string', 'message is invalid');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'commit',
+        options: {
+            /**
+             * Allow for multi-line commit messages, which can't be passed via the CLI.
+             * @see https://git-scm.com/docs/git-commit#git-commit--Fltfilegt
+             */
+            '-F': '-'
+        }
+    });
+
+    const dugiteExecResult = await dugiteExec(
+        dugiteExecArgs,
+        workingDirectory,
+        { stdin: message }
+    );
+
+    return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs, workingDirectory });
+}
+
+/**
  * This module provides methods for executing common git operations.
  * It is a thin wrapper around dugite (https://github.com/desktop/dugite),
  * which provides JavaScript bindings for interacting with the git command line
@@ -184,4 +222,5 @@ module.exports = {
     checkoutBranch,
     add,
     rm,
+    commit,
 };
