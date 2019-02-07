@@ -18,16 +18,25 @@ _Note:_ This package is not published on npm.
 
 The git helper assists with common git operations such as cloning a repository,
 adding a file, committing a file and pushing to a remote. This helper is a library
-that exports a single class, `Git`:
+that exports a module, `git`.
+
+**Usage example:**
 
 ```javascript
-const { Git } = require('@financial-times/tooling-helpers');
+const { git } = require('@financial-times/tooling-helpers');
+
+git.defaults({ workingDirectory: '/tmp/repository' });
+
+await git.clone({ repository: 'git@github.com:org/repository.git' });
+await git.createBranch({ name: 'new-feature-branch' });
 ```
 
-See [git/src/index.js](git/src/index.js) for all available methods.
+See [`git/src/index.js`](git/src/index.js) for all available methods and
+[`git/examples/`](git/examples/) for usage examples.
 
-_Note:_ Requires a [GitHub personal access token](#github-personal-access-token-security)
-with `repo` scope to be able to clone and push to private remote repositories.
+The git helper is a thin wrapper around [dugite](https://github.com/desktop/dugite),
+which provides JavaScript bindings for interacting with the git command line
+interface.
 
 ### [github](github/src/)
 
@@ -46,10 +55,10 @@ const github = require('@financial-times/tooling-helpers').github({
 });
 ```
 
-See [github/examples/examples.js](github/examples/examples.js) for a full set of
+See [`github/examples/examples.js`](github/examples/examples.js) for a full set of
 usage examples.
 
-See [github/src/index.js](github/src/index.js) for all available methods.
+See [`github/src/index.js`](github/src/index.js) for all available methods.
 
 **CLI usage:**
 
@@ -77,7 +86,7 @@ helper exports a single class, `PackageJson`:
 const { PackageJson } = require('@financial-times/tooling-helpers');
 ```
 
-See [package-json/src/index.js](package-json/src/index.js) for available methods.
+See [`package-json/src/index.js`](package-json/src/index.js) for available methods.
 
 ## GitHub personal access token security
 
