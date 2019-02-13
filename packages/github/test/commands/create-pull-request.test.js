@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 
-const pullRequestFixture = require('../../../__mocks__/@octokit/fixtures/create');
+const pullRequestFixture = require('../../__mocks__/@octokit/fixtures/create');
 
 const createPullRequestCommand = require('../../src/commands/create-pull-request');
 
