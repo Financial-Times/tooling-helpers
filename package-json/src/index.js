@@ -8,6 +8,28 @@ const dependencyFields = [
 ];
 
 /**
+ * Deep clone a JavaScript object.
+ *
+ * @param {object} object
+ */
+function deepCloneObject(object) {
+  return JSON.parse(JSON.stringify(object));
+}
+
+/**
+ * Convert a JavaScript object to a formatted JSON string.
+ *
+ * @param {object} object
+ * @returns {string}
+ */
+function formatObjectAsJson(object) {
+  const formattedContents =
+    JSON.stringify(object, null, 2) + "\n";
+
+  return formattedContents;
+}
+
+/**
  * Functions for creating human-friendly messages from changelog objects.
  */
 const createChangelogMessage = {
@@ -69,7 +91,8 @@ class PackageJson {
     this.changelog = [];
 
     this.originalContents = require(this.options.filepath);
-    this.workingContents = { ...this.originalContents };
+    this.previousContents = deepCloneObject(this.originalContents);
+    this.workingContents = deepCloneObject(this.originalContents);
   }
 
   /**
@@ -123,16 +146,27 @@ class PackageJson {
    * @returns boolean
    */
   write() {
-    const formattedContents =
-      JSON.stringify(this.workingContents, null, 2) + "\n";
-
-    fs.writeFileSync(this.options.filepath, formattedContents);
+    fs.writeFileSync(this.options.filepath, formatObjectAsJson(this.workingContents));
 
     for (let entry of this.changelog) {
       entry.written = true;
     }
 
+    this.previousContents = deepCloneObject(this.workingContents);
+
     return true;
+  }
+
+  /**
+   * Check if there are file changes to write.
+   *
+   * @returns boolean
+   */
+  hasChangesToWrite() {
+    const formattedPreviousContents = formatObjectAsJson(this.previousContents);
+    const formattedWorkingContents = formatObjectAsJson(this.workingContents);
+
+    return (formattedPreviousContents !== formattedWorkingContents);
   }
 
   /**
