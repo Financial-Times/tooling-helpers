@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "postinstall": "athloi exec -- npm install --no-package-lock",
     "test": "npm run unit-test",
     "unit-test": "jest"
   },
