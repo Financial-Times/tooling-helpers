@@ -4,6 +4,6 @@
 
 ## Packages
 
-- [git](git/)
-- [github](github/)
-- [package-json](package-json/)
+- [git](packages/git/)
+- [github](packages/github/)
+- [package-json](packages/package-json/)
