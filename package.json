@@ -1,31 +1,13 @@
 {
-  "name": "@financial-times/tooling-helpers",
-  "version": "0.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
   "scripts": {
+    "postinstall": "athloi exec -- npm install --no-package-lock",
     "test": "npm run unit-test",
     "unit-test": "jest"
   },
-  "bin": {
-    "github": "./github/src/cli.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Financial-Times/tooling-helpers.git"
-  },
-  "author": "Simon Plenderleith <simon@simonplend.co.uk>",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Financial-Times/tooling-helpers/issues"
-  },
-  "homepage": "https://github.com/Financial-Times/tooling-helpers#readme",
-  "dependencies": {
-    "@octokit/rest": "^16.0.1",
-    "dugite": "^1.82.0",
-    "yargs": "^13.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
+    "@financial-times/athloi": "^1.0.0-beta.16",
     "jest": "^24.1.0",
     "jest-junit": "^6.2.1"
   },

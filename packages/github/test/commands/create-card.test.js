@@ -1,8 +1,8 @@
 const yargs = require('yargs');
 
-const columnFixture = require('../../../__mocks__/@octokit/fixtures/createColumn');
+const columnFixture = require('../../__mocks__/@octokit/fixtures/createColumn');
 
-const cardFixture = require('../../../__mocks__/@octokit/fixtures/createCard');
+const cardFixture = require('../../__mocks__/@octokit/fixtures/createCard');
 
 const addPullRequestCommand = require('../../src/commands/create-card');
 

@@ -1,6 +1,6 @@
 const yargs = require('yargs');
 
-const organisationFixture = require('../../../__mocks__/@octokit/fixtures/createForOrg');
+const organisationFixture = require('../../__mocks__/@octokit/fixtures/createForOrg');
 
 const createProjectCommand = require('../../src/commands/create-project');
 
