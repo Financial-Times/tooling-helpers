@@ -1,5 +1,5 @@
 {
-  "name": "git",
+  "name": "@financial-times/git",
   "version": "0.0.0",
   "description": "",
   "main": "src/index.js",
