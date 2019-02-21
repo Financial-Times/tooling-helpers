@@ -1,10 +1,11 @@
 const fs = require("fs");
 
-const dependencyFields = [
+const compatibleFields = [
   "dependencies",
   "devDependencies",
   "optionalDependencies",
-  "peerDependencies"
+  "peerDependencies",
+  "scripts"
 ];
 
 /**
@@ -180,9 +181,9 @@ class PackageJson {
    * @returns {object} - changelog entry
    */
   requireDependency({ pkg, version, field }) {
-    if (!dependencyFields.includes(field)) {
+    if (!compatibleFields.includes(field)) {
       throw new Error(
-        `PackageJson#addDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+        `PackageJson#addDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
           ", "
         )}`
       );
@@ -226,9 +227,9 @@ class PackageJson {
    * @returns {object} - changelog entry
    */
   removeDependency({ pkg, field }) {
-    if (!dependencyFields.includes(field)) {
+    if (!compatibleFields.includes(field)) {
       throw new Error(
-        `PackageJson#removeDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+        `PackageJson#removeDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
           ", "
         )}`
       );
