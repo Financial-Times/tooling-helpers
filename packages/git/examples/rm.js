@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const { rm } = require('../src');
 
 async function main() {
