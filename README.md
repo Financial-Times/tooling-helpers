@@ -5,5 +5,4 @@
 ## Packages
 
 - [git](packages/git/)
-- [github](packages/github/)
 - [package-json](packages/package-json/)
