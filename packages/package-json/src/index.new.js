@@ -1,4 +1,5 @@
 const fs = require("fs");
+const path = require("path");
 
 const dependencyFields = [
     "dependencies",
@@ -51,6 +52,8 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     };
 
     const options = { ...defaults, ...overrideOptions };
+
+    options.filepath = path.resolve(options.filepath);
 
     const changelog = [];
 
@@ -148,7 +151,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
      */
     function writeChanges() {
         fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
-        // console.log(fs.readFileSync(options.filepath, 'utf8'))
 
         for (let entry of changelog) {
             entry.changeWritten = true;
