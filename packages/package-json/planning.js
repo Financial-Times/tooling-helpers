@@ -18,7 +18,7 @@ packageJson.getField('name');
 
 // Existing methods to reimplement:
 
-constructor -> loadPackageJson
++ constructor -> loadPackageJson
 // TODO: Check file exists before attempting to read it
 // Issue: https://github.com/Financial-Times/tooling-helpers/issues/9
 // TODO: Validate `package.json` on load and write ?
@@ -29,9 +29,9 @@ constructor -> loadPackageJson
 // Issue: https://github.com/Financial-Times/tooling-helpers/issues/55
 
 + requireDependency
-removeDependency
++ removeDependency
 
-requireScript
++ requireScript
 
 + hasChangesToWrite
 + write

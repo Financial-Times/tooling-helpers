@@ -226,11 +226,56 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         return changelogEntry;
     }
 
+    /**
+     * Require a script to exist in the `scripts` field of `package.json`.
+     *
+     * @param {object} options
+     * @param {string} options.lifecycleEvent
+     * @param {string} options.command
+     *
+     * @returns {object} - changelog entry
+     */
+    function requireScript({ lifecycleEvent, command }) {
+        // TODO: could rename lifecycleEvent to npmStage or something?
+        const changelogEntry = {
+            event: "requireScript",
+            lifecycleEvent,
+            alreadyExisted: false,
+            written: false
+        };
+
+        const scriptsFieldExists =
+            typeof workingContents.scripts !== "undefined";
+
+        if (!scriptsFieldExists) {
+            workingContents.scripts = {};
+        }
+
+        const scripts = workingContents.scripts;
+
+        const lifecycleEventAlreadyExists =
+            typeof scripts[lifecycleEvent] !== "undefined";
+
+        changelogEntry.alreadyExisted = lifecycleEventAlreadyExists;
+
+        scripts[lifecycleEvent] = command;
+
+        if (options.writeImmediately === true) {
+            write();
+            changelogEntry.written = true;
+        }
+
+        changelog.push(changelogEntry);
+
+        return changelogEntry;
+    }
+
     return {
         getField,
         setField,
         hasChangesToWrite,
         requireDependency,
-        removeDependency
+        removeDependency,
+        requireScript
     };
 };
