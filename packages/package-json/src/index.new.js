@@ -180,10 +180,57 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         return changelogEntry;
     }
 
+    /**
+     * Remove a package as a dependency from `package.json`.
+     *
+     * @param {object} options
+     * @param {string} options.pkg
+     * @param {string} options.field
+     *
+     * @returns {object} - changelog entry
+     */
+    function removeDependency({ pkg, field }) {
+        if (!compatibleFields.includes(field)) {
+            throw new Error(
+                `PackageJson#removeDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
+                ", "
+                )}`
+            );
+        }
+
+        const dependencies = workingContents[field];
+
+        const changelogEntry = {
+            event: "removeDependency",
+            pkg,
+            field,
+            version: null,
+            written: false
+        };
+
+        if (typeof dependencies[pkg] !== "undefined") {
+            changelogEntry.version = dependencies[pkg];
+            delete dependencies[pkg];
+        } else {
+            // TODO: What should we do if the dependency doesn't exist?
+            console.log('pkg does not exist!')
+        }
+
+        if (options.writeImmediately === true) {
+            write();
+            changelogEntry.written = true;
+        }
+
+        changelog.push(changelogEntry);
+
+        return changelogEntry;
+    }
+
     return {
         getField,
         setField,
         hasChangesToWrite,
-        requireDependency
+        requireDependency,
+        removeDependency
     };
 };
