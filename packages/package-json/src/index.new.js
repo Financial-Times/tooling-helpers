@@ -1,5 +1,13 @@
 const fs = require("fs");
 
+const compatibleFields = [
+    "dependencies",
+    "devDependencies",
+    "optionalDependencies",
+    "peerDependencies",
+    "scripts"
+];
+
 /**
  * Deep clone a JavaScript object.
  *
@@ -48,7 +56,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     const changelog = [];
 
     const originalContents = require(options.filepath);
-    // const previousContents = deepCloneObject(originalContents);
+    const previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
 
     /**
@@ -125,9 +133,57 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         return (formattedPreviousContents !== formattedWorkingContents);
     }
 
+    /**
+     * Require a package to exist as a dependency in `package.json`.
+     *
+     * @param {object} options
+     * @param {string} options.pkg - Package name
+     * @param {string} options.version
+     * @param {string} options.field
+     *
+     * @returns {object} - changelog entry
+     */
+    function requireDependency({ pkg, version, field }) {
+        if (!compatibleFields.includes(field)) {
+            throw new Error(
+                `PackageJson#addDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
+                ", "
+                )}`
+            );
+        }
+
+        const dependencies = workingContents[field];
+
+        const changelogEntry = {
+            event: "requireDependency",
+            pkg,
+            field,
+            version,
+            previousVersionRange: false,
+            written: false
+        };
+
+        const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
+        if (dependencyAlreadyExists) {
+            changelogEntry.previousVersionRange = dependencies[pkg];
+        }
+
+        dependencies[pkg] = version;
+
+        if (options.writeImmediately === true) {
+            write();
+            changelogEntry.written = true;
+        }
+
+        changelog.push(changelogEntry);
+
+        return changelogEntry;
+    }
+
     return {
         getField,
         setField,
-        hasChangesToWrite
+        hasChangesToWrite,
+        requireDependency
     };
 };

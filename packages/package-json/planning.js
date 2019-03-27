@@ -28,12 +28,12 @@ constructor -> loadPackageJson
 // TODO: Allow to target a deep field
 // Issue: https://github.com/Financial-Times/tooling-helpers/issues/55
 
-requireDependency
++ requireDependency
 removeDependency
 
 requireScript
 
-+hasChangesToWrite
++ hasChangesToWrite
 + write
 
 + deepCloneObject
