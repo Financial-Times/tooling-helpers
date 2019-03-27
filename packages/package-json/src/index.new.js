@@ -66,7 +66,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
      * @returns {*}
      */
     function getField(field) {
-      return workingContents[field];
+        return workingContents[field];
     }
 
     /**
@@ -105,6 +105,48 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     };
 
     /**
+     * Removes a specific field (and associated values) in the `package.json` object.
+     *
+     * @param {string} field
+     * @param {*} value
+     *
+     * @returns {object} - changelog entry
+     */
+
+    function removeField(field) {
+        const changelogEntry = {
+            event: "removeField",
+            field,
+            previousValue: false,
+            // TODO: could we change the written field to changeWritten? I keep reading it as whether the logEntry has been written
+            written: false
+        };
+
+        const fieldAlreadyExists =
+            typeof workingContents[field] !== "undefined";
+
+        if (fieldAlreadyExists) {
+            changelogEntry.previousValue = workingContents[field];
+        } else {
+            console.log("field does not exist")
+            // TODO: anything else here??
+        }
+
+        delete workingContents.field;
+
+        if (options.writeImmediately === true) {
+            write();
+            // TODO: do we want to change/add a different changeLogEntry field for this?
+            changelogEntry.written = true;
+        }
+
+        changelog.push(changelogEntry);
+
+        return changelogEntry;
+    }
+
+
+    /**
      * Write to the `package.json` file.
      *
      * @returns boolean
@@ -113,7 +155,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
 
         for (let entry of changelog) {
-        entry.written = true;
+            entry.written = true;
         }
 
         previousContents = deepCloneObject(workingContents);
@@ -273,6 +315,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     return {
         getField,
         setField,
+        removeField,
         hasChangesToWrite,
         requireDependency,
         removeDependency,
