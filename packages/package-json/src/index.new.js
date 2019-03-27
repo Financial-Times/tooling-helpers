@@ -131,7 +131,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             // TODO: anything else here??
         }
 
-        delete workingContents.field;
+        delete workingContents[field];
 
         if (options.writeImmediately === true) {
             writeChanges();
