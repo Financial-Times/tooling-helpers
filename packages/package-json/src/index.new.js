@@ -82,7 +82,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             event: "setField",
             field,
             previousValue: false,
-            written: false
+            changeWritten: false
         };
 
         const fieldAlreadyExists =
@@ -94,10 +94,10 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
 
         workingContents[field] = value;
 
-        if (options.writeImmediately === true) {
-            write();
-            changelogEntry.written = true;
-        }
+        // if (options.writeImmediately === true) {
+            writeChanges();
+            changelogEntry.changeWritten = true;
+        // }
 
         changelog.push(changelogEntry);
 
@@ -108,7 +108,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
      * Removes a specific field (and associated values) in the `package.json` object.
      *
      * @param {string} field
-     * @param {*} value
      *
      * @returns {object} - changelog entry
      */
@@ -118,8 +117,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             event: "removeField",
             field,
             previousValue: false,
-            // TODO: could we change the written field to changeWritten? I keep reading it as whether the logEntry has been written
-            written: false
+            changeWritten: false
         };
 
         const fieldAlreadyExists =
@@ -135,9 +133,8 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         delete workingContents.field;
 
         if (options.writeImmediately === true) {
-            write();
-            // TODO: do we want to change/add a different changeLogEntry field for this?
-            changelogEntry.written = true;
+            writeChanges();
+            changelogEntry.changeWritten = true;
         }
 
         changelog.push(changelogEntry);
@@ -151,11 +148,12 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
      *
      * @returns boolean
      */
-    function write() {
+    function writeChanges() {
         fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
+        // console.log(fs.readFileSync(options.filepath, 'utf8'))
 
         for (let entry of changelog) {
-            entry.written = true;
+            entry.changeWritten = true;
         }
 
         previousContents = deepCloneObject(workingContents);
@@ -202,7 +200,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             field,
             version,
             previousVersionRange: false,
-            written: false
+            changeWritten: false
         };
 
         const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
@@ -213,8 +211,8 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         dependencies[pkg] = version;
 
         if (options.writeImmediately === true) {
-            write();
-            changelogEntry.written = true;
+            writeChanges();
+            changelogEntry.changeWritten = true;
         }
 
         changelog.push(changelogEntry);
@@ -259,8 +257,8 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         }
 
         if (options.writeImmediately === true) {
-            write();
-            changelogEntry.written = true;
+            writeChanges();
+            changelogEntry.changeWritten = true;
         }
 
         changelog.push(changelogEntry);
@@ -283,7 +281,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             event: "requireScript",
             lifecycleEvent,
             alreadyExisted: false,
-            written: false
+            changeWritten: false
         };
 
         const scriptsFieldExists =
@@ -303,8 +301,8 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         scripts[lifecycleEvent] = command;
 
         if (options.writeImmediately === true) {
-            write();
-            changelogEntry.written = true;
+            writeChanges();
+            changelogEntry.changeWritten = true;
         }
 
         changelog.push(changelogEntry);
