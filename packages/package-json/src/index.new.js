@@ -113,10 +113,21 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         return true;
     }
 
+    /**
+     * Check if there are file changes to write.
+     *
+     * @returns boolean
+     */
+    function hasChangesToWrite() {
+        const formattedPreviousContents = formatObjectAsJson(previousContents);
+        const formattedWorkingContents = formatObjectAsJson(workingContents);
 
+        return (formattedPreviousContents !== formattedWorkingContents);
+    }
 
     return {
         getField,
-        setField
+        setField,
+        hasChangesToWrite
     };
 };

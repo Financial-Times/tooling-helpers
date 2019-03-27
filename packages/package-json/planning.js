@@ -33,7 +33,7 @@ removeDependency
 
 requireScript
 
-hasChangesToWrite
++hasChangesToWrite
 + write
 
 + deepCloneObject
