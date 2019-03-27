@@ -55,7 +55,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     const changelog = [];
 
     const originalContents = require(options.filepath);
-    const previousContents = deepCloneObject(originalContents);
+    let previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
 
     /**
@@ -101,13 +101,12 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         changelog.push(changelogEntry);
 
         return changelogEntry;
-    };
+    }
 
     /**
      * Removes a specific field (and associated values) in the `package.json` object.
      *
      * @param {string} field
-     *
      * @returns {object} - changelog entry
      */
 
@@ -313,6 +312,7 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         getField,
         setField,
         removeField,
+        writeChanges,
         hasChangesToWrite,
         requireDependency,
         removeDependency,
