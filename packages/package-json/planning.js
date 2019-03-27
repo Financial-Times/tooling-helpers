@@ -24,7 +24,7 @@ constructor -> loadPackageJson
 // TODO: Validate `package.json` on load and write ?
 
 + getField
-setField
++ setField
 // TODO: Allow to target a deep field
 // Issue: https://github.com/Financial-Times/tooling-helpers/issues/55
 
@@ -34,7 +34,10 @@ removeDependency
 requireScript
 
 hasChangesToWrite
-write
++ write
+
++ deepCloneObject
++ formatObjectAdJson
 
 getChangelog
 getChangelogAsMessages

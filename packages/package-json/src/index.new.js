@@ -1,3 +1,5 @@
+const fs = require("fs");
+
 /**
  * Deep clone a JavaScript object.
  *
@@ -8,7 +10,23 @@ function deepCloneObject(object) {
 }
 
 /**
+ * Convert a JavaScript object to a formatted JSON string.
+ *
+ * @param {object} object
+ * @returns {string}
+ */
+function formatObjectAsJson(object) {
+    const formattedContents =
+        JSON.stringify(object, null, 2) + "\n";
+
+    return formattedContents;
+}
+
+/**
  * TODO: Give this a better description
+ * TODO: Validate filepath existence
+ * TODO: Validate file is actually a package.json
+ * 
  *
  * @param {object} options
  * @param {string} options.filepath - Filepath to a `package.json` file
@@ -43,7 +61,62 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
       return workingContents[field];
     }
 
+    /**
+     * Set the value for a specific field in the `package.json` object.
+     *
+     * @param {string} field
+     * @param {*} value
+     *
+     * @returns {object} - changelog entry
+     */
+    function setField(field, value) {
+        const changelogEntry = {
+            event: "setField",
+            field,
+            previousValue: false,
+            written: false
+        };
+
+        const fieldAlreadyExists =
+            typeof workingContents[field] !== "undefined";
+
+        if (fieldAlreadyExists) {
+            changelogEntry.previousValue = workingContents[field];
+        }
+
+        workingContents[field] = value;
+
+        if (options.writeImmediately === true) {
+            write();
+            changelogEntry.written = true;
+        }
+
+        changelog.push(changelogEntry);
+
+        return changelogEntry;
+    };
+
+    /**
+     * Write to the `package.json` file.
+     *
+     * @returns boolean
+     */
+    function write() {
+        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
+
+        for (let entry of changelog) {
+        entry.written = true;
+        }
+
+        previousContents = deepCloneObject(workingContents);
+
+        return true;
+    }
+
+
+
     return {
-        getField
+        getField,
+        setField
     };
 };
