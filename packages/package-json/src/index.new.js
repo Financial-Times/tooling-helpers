@@ -93,10 +93,10 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
 
         workingContents[field] = value;
 
-        // if (options.writeImmediately === true) {
+        if (options.writeImmediately === true) {
             writeChanges();
             changelogEntry.changeWritten = true;
-        // }
+        }
 
         changelog.push(changelogEntry);
 
