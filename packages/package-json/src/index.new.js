@@ -13,9 +13,7 @@ const dependencyFields = [
  *
  * @param {object} object
  */
-function deepCloneObject(object) {
-    return JSON.parse(JSON.stringify(object));
-}
+const deepCloneObject = (object) => JSON.parse(JSON.stringify(object));
 
 /**
  * Convert a JavaScript object to a formatted JSON string.
@@ -23,19 +21,11 @@ function deepCloneObject(object) {
  * @param {object} object
  * @returns {string}
  */
-function formatObjectAsJson(object) {
-    const formattedContents =
-        JSON.stringify(object, null, 2) + "\n";
-
-    return formattedContents;
-}
+const formatObjectAsJson = (object) => JSON.stringify(object, null, 2) + "\n";
 
 /**
  * TODO: Give this a better description
- * TODO: Validate filepath existence
- * TODO: Validate file is actually a package.json
  * 
- *
  * @param {object} options
  * @param {string} options.filepath - Filepath to a `package.json` file
  * @param {boolean} options.writeImmediately - When a change is made automatically write it to the `package.json` file (default: false)
@@ -60,6 +50,35 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     const originalContents = require(options.filepath);
     let previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
+
+    /**
+     * Check if there are file changes to write.
+     *
+     * @returns boolean
+     */
+    function hasChangesToWrite() {
+        const formattedPreviousContents = formatObjectAsJson(previousContents);
+        const formattedWorkingContents = formatObjectAsJson(workingContents);
+
+        return (formattedPreviousContents !== formattedWorkingContents);
+    }
+
+    /**
+     * Write to the `package.json` file.
+     *
+     * @returns boolean
+     */
+    function writeChanges() {
+        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
+
+        for (let entry of changelog) {
+            entry.changeWritten = true;
+        }
+
+        previousContents = deepCloneObject(workingContents);
+
+        return true;
+    }
 
     /**
      * Get a specific field from the `package.json` object.
@@ -141,36 +160,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         changelog.push(changelogEntry);
 
         return changelogEntry;
-    }
-
-
-    /**
-     * Write to the `package.json` file.
-     *
-     * @returns boolean
-     */
-    function writeChanges() {
-        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
-
-        for (let entry of changelog) {
-            entry.changeWritten = true;
-        }
-
-        previousContents = deepCloneObject(workingContents);
-
-        return true;
-    }
-
-    /**
-     * Check if there are file changes to write.
-     *
-     * @returns boolean
-     */
-    function hasChangesToWrite() {
-        const formattedPreviousContents = formatObjectAsJson(previousContents);
-        const formattedWorkingContents = formatObjectAsJson(workingContents);
-
-        return (formattedPreviousContents !== formattedWorkingContents);
     }
 
     /**
@@ -269,14 +258,15 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     /**
      * Require a script to exist in the `scripts` field of `package.json`.
      *
+     * @see https://docs.npmjs.com/misc/scripts
+     *
      * @param {object} options
-     * @param {string} options.lifecycleEvent
+     * @param {string} options.lifecycleEvent - e.g. start, test, build, deploy
      * @param {string} options.command
      *
      * @returns {object} - changelog entry
      */
     function requireScript({ lifecycleEvent, command }) {
-        // TODO: could rename lifecycleEvent to npmStage or something?
         const changelogEntry = {
             event: "requireScript",
             lifecycleEvent,
@@ -311,11 +301,11 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
     }
 
     return {
+        hasChangesToWrite,
+        writeChanges,
         getField,
         setField,
         removeField,
-        writeChanges,
-        hasChangesToWrite,
         requireDependency,
         removeDependency,
         requireScript
