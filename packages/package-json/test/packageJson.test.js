@@ -99,16 +99,43 @@ describe("removeDependency", () => {
 
     expect(packageJson.getWorkingContents()).toMatchSnapshot();
   });
-
-  test("throws error if pkg does not exist", () => {
-    expect(() => {
-      packageJson.removeDependency({
-        pkg: "ebi",
-        version: "1.1.0",
-        field: "devDependencies"
-      });
-    }).toThrowErrorMatchingSnapshot();
-  });
 });
 
-//   Write tests for requireScript
+describe("requireScript", () => {
+  test("creates new script if absent", () => {
+    const changelogEntry = packageJson.requireScript({
+      lifecycleEvent: "unit-test",
+      command: "test"
+    });
+    expect(changelogEntry).toMatchSnapshot();
+    expect(changelogEntry.alreadyExisted).toEqual(false);
+    expect(changelogEntry.lifecycleEvent).toEqual("unit-test");
+    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+  });
+
+  test("creates new script if no previous scripts", () => {
+    const packageJsonWithoutScripts = loadPackageJson({
+      filepath: "./package-json/test/testPackageJsonNoScripts.json"
+    });
+    const changelogEntry = packageJsonWithoutScripts.requireScript({
+      lifecycleEvent: "test",
+      command: "npm run unit-test"
+    });
+    expect(changelogEntry).toMatchSnapshot();
+    expect(changelogEntry.alreadyExisted).toEqual(false);
+    const workingContents = packageJsonWithoutScripts.getWorkingContents();
+    expect(workingContents).toMatchSnapshot();
+    expect(workingContents.scripts).toMatchSnapshot();
+  });
+
+  test("replaces script if present", () => {
+    const changelogEntry = packageJson.requireScript({
+      lifecycleEvent: "test",
+      command: "npm run unit-test"
+    });
+    expect(changelogEntry).toMatchSnapshot();
+    expect(changelogEntry.alreadyExisted).toEqual(true);
+    expect(changelogEntry.lifecycleEvent).toEqual("test");
+    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+  });
+});
