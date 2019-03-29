@@ -31,8 +31,7 @@ module.exports = function loadPackageJson(options = {}) {
     let previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
 
-    // TODO: Rename this function
-    function getWorkingContents() {
+    function getDocument() {
         return deepCloneObject(workingContents);
     }
 
@@ -232,7 +231,7 @@ module.exports = function loadPackageJson(options = {}) {
     }
 
     return {
-        getWorkingContents,
+        getDocument,
         hasChangesToWrite,
         writeChanges,
         getField,

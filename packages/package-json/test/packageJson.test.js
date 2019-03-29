@@ -22,14 +22,14 @@ describe("setField", () => {
   test("logs a field to write if field exists", () => {
     const changelogEntry = packageJson.setField("name", "ebi v2");
     expect(changelogEntry).toMatchSnapshot();
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 
   test("logs a field to create if field does not exist", () => {
     const changelogEntry = packageJson.setField("private", true);
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.previousValue).toEqual(undefined);
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
 
@@ -52,7 +52,7 @@ describe("requireDependency", () => {
     });
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.previousVersionRange).toEqual("1.16.3");
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 
   test("creates new dependency if absent", () => {
@@ -63,7 +63,7 @@ describe("requireDependency", () => {
     });
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.previousVersionRange).toEqual(undefined);
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
 
@@ -97,7 +97,7 @@ describe("removeDependency", () => {
     expect(changelogEntry.version).toEqual("1.16.3");
     expect(changelogEntry.pkg).toEqual("prettier");
 
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
 
@@ -110,7 +110,7 @@ describe("requireScript", () => {
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.alreadyExisted).toEqual(false);
     expect(changelogEntry.lifecycleEvent).toEqual("unit-test");
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 
   test("creates new script if no previous scripts", () => {
@@ -123,7 +123,7 @@ describe("requireScript", () => {
     });
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.alreadyExisted).toEqual(false);
-    const workingContents = packageJsonWithoutScripts.getWorkingContents();
+    const workingContents = packageJsonWithoutScripts.getDocument();
     expect(workingContents).toMatchSnapshot();
     expect(workingContents.scripts.test).toEqual("npm run unit-test");
   });
@@ -136,6 +136,6 @@ describe("requireScript", () => {
     expect(changelogEntry).toMatchSnapshot();
     expect(changelogEntry.alreadyExisted).toEqual(true);
     expect(changelogEntry.lifecycleEvent).toEqual("test");
-    expect(packageJson.getWorkingContents()).toMatchSnapshot();
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
