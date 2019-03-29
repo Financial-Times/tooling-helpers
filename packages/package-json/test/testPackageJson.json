@@ -1,0 +1,21 @@
+{
+    "private": true,
+    "scripts": {
+      "postinstall": "athloi exec -- npm install --no-package-lock",
+      "test": "npm run unit-test",
+      "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+      "unit-test": "jest"
+    },
+    "dependencies": {},
+    "devDependencies": {
+      "@financial-times/athloi": "^1.0.0-beta.16",
+      "eslint": "^5.14.1",
+      "eslint-config-prettier": "^4.0.0",
+      "eslint-plugin-no-only-tests": "^2.1.0",
+      "jest": "^24.1.0",
+      "jest-junit": "^6.2.1"
+    },
+    "engines": {
+      "node": "10.15.2"
+    }
+  }
