@@ -1,27 +1,14 @@
 const fs = require("fs");
 const path = require("path");
 
+const { deepCloneObject, formatObjectAsJson } = require("./lib/helpers");
+
 const dependencyFields = [
     "dependencies",
     "devDependencies",
     "optionalDependencies",
     "peerDependencies"
 ];
-
-/**
- * Deep clone a JavaScript object.
- *
- * @param {object} object
- */
-const deepCloneObject = (object) => JSON.parse(JSON.stringify(object));
-
-/**
- * Convert a JavaScript object to a formatted JSON string.
- *
- * @param {object} object
- * @returns {string}
- */
-const formatObjectAsJson = (object) => JSON.stringify(object, null, 2) + "\n";
 
 /**
  * TODO: Give this a better description
@@ -67,7 +54,7 @@ module.exports = function loadPackageJson(options = {}) {
      * @returns boolean
      */
     function writeChanges() {
-        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents));
+        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents) + "\n");
 
         for (let entry of changelog) {
             entry.changeWritten = true;
