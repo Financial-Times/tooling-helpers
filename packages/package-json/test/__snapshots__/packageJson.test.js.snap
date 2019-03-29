@@ -359,12 +359,6 @@ Object {
 }
 `;
 
-exports[`requireScript creates new script if no previous scripts 3`] = `
-Object {
-  "test": "npm run unit-test",
-}
-`;
-
 exports[`requireScript replaces script if present 1`] = `
 Object {
   "alreadyExisted": true,

@@ -4,7 +4,7 @@ let packageJson;
 
 beforeEach(() => {
   packageJson = loadPackageJson({
-    filepath: "./package-json/test/testPackageJson.json"
+    filepath: `${__dirname}/testPackageJson.json`
   });
 });
 
@@ -115,7 +115,7 @@ describe("requireScript", () => {
 
   test("creates new script if no previous scripts", () => {
     const packageJsonWithoutScripts = loadPackageJson({
-      filepath: "./package-json/test/testPackageJsonNoScripts.json"
+      filepath: `${__dirname}/testPackageJsonNoScripts.json`
     });
     const changelogEntry = packageJsonWithoutScripts.requireScript({
       lifecycleEvent: "test",
@@ -125,7 +125,7 @@ describe("requireScript", () => {
     expect(changelogEntry.alreadyExisted).toEqual(false);
     const workingContents = packageJsonWithoutScripts.getWorkingContents();
     expect(workingContents).toMatchSnapshot();
-    expect(workingContents.scripts).toMatchSnapshot();
+    expect(workingContents.scripts.test).toEqual("npm run unit-test");
   });
 
   test("replaces script if present", () => {
