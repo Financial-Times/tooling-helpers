@@ -100,7 +100,7 @@ module.exports = function loadPackageJson(options = {}) {
         const changelogEntry = {
             event: "setField",
             field,
-            previousValue: false,
+            previousValue: undefined,
             changeWritten: false
         };
 
@@ -144,7 +144,7 @@ module.exports = function loadPackageJson(options = {}) {
             pkg,
             field,
             version,
-            previousVersionRange: false,
+            previousVersionRange: undefined,
             changeWritten: false
         };
 
