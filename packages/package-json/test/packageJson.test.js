@@ -78,6 +78,16 @@ describe("removeDependency", () => {
     }).toThrowErrorMatchingSnapshot();
   });
 
+  test("throws error if pkg does not exist", () => {
+    expect(() => {
+      packageJson.removeDependency({
+        pkg: "ebi",
+        version: "1.1.0",
+        field: "devDependencies"
+      });
+    }).toThrowErrorMatchingSnapshot();
+  });
+
   test("removes existing pkg", () => {
     const changelogEntry = packageJson.removeDependency({
       pkg: "prettier",
