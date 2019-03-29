@@ -28,20 +28,13 @@ const formatObjectAsJson = (object) => JSON.stringify(object, null, 2) + "\n";
  * 
  * @param {object} options
  * @param {string} options.filepath - Filepath to a `package.json` file
- * @param {boolean} options.writeImmediately - When a change is made automatically write it to the `package.json` file (default: false)
  */
-module.exports = function loadPackageJson(overrideOptions = {}) {
-    if (!overrideOptions.filepath) {
+module.exports = function loadPackageJson(options = {}) {
+    if (!options.filepath) {
         throw new Error(
         "PackageJson#constructor: `filepath` option must be specified"
         );
     }
-
-    const defaults = {
-        writeImmediately: false
-    };
-
-    const options = { ...defaults, ...overrideOptions };
 
     options.filepath = path.resolve(options.filepath);
 
@@ -115,48 +108,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
 
         workingContents[field] = value;
 
-        if (options.writeImmediately === true) {
-            writeChanges();
-            changelogEntry.changeWritten = true;
-        }
-
-        changelog.push(changelogEntry);
-
-        return changelogEntry;
-    }
-
-    /**
-     * Removes a specific field (and associated values) in the `package.json` object.
-     *
-     * @param {string} field
-     * @returns {object} - changelog entry
-     */
-
-    function removeField(field) {
-        const changelogEntry = {
-            event: "removeField",
-            field,
-            previousValue: false,
-            changeWritten: false
-        };
-
-        const fieldAlreadyExists =
-            typeof workingContents[field] !== "undefined";
-
-        if (fieldAlreadyExists) {
-            changelogEntry.previousValue = workingContents[field];
-        } else {
-            console.log("field does not exist")
-            // TODO: anything else here??
-        }
-
-        delete workingContents[field];
-
-        if (options.writeImmediately === true) {
-            writeChanges();
-            changelogEntry.changeWritten = true;
-        }
-
         changelog.push(changelogEntry);
 
         return changelogEntry;
@@ -199,11 +150,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
 
         dependencies[pkg] = version;
 
-        if (options.writeImmediately === true) {
-            writeChanges();
-            changelogEntry.changeWritten = true;
-        }
-
         changelog.push(changelogEntry);
 
         return changelogEntry;
@@ -241,13 +187,11 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
             changelogEntry.version = dependencies[pkg];
             delete dependencies[pkg];
         } else {
+            throw new Error(
+                `PackageJson#removeDependency: Dependency '${pkg}' is absent.`
+            );
             // TODO: What should we do if the dependency doesn't exist?
             console.log('pkg does not exist!')
-        }
-
-        if (options.writeImmediately === true) {
-            writeChanges();
-            changelogEntry.changeWritten = true;
         }
 
         changelog.push(changelogEntry);
@@ -290,11 +234,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
 
         scripts[lifecycleEvent] = command;
 
-        if (options.writeImmediately === true) {
-            writeChanges();
-            changelogEntry.changeWritten = true;
-        }
-
         changelog.push(changelogEntry);
 
         return changelogEntry;
@@ -305,7 +244,6 @@ module.exports = function loadPackageJson(overrideOptions = {}) {
         writeChanges,
         getField,
         setField,
-        removeField,
         requireDependency,
         removeDependency,
         requireScript
