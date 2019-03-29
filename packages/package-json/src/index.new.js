@@ -44,6 +44,11 @@ module.exports = function loadPackageJson(options = {}) {
     let previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
 
+    // TODO: Rename this function
+    function getWorkingContents() {
+        return deepCloneObject(workingContents);
+    }
+
     /**
      * Check if there are file changes to write.
      *
@@ -240,6 +245,7 @@ module.exports = function loadPackageJson(options = {}) {
     }
 
     return {
+        getWorkingContents,
         hasChangesToWrite,
         writeChanges,
         getField,
