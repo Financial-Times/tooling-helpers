@@ -1,6 +1,6 @@
-var packageJsonLoads = require('./index.new.js')
+let packageJsonLoads = require('./index.new.js')
 
-var packageJson = packageJsonLoads({'filepath': '../package.json'})
+let packageJson = packageJsonLoads({'filepath': '../package.json'})
 
 // console.log(packageJson.setField("description", "blah"))
 
