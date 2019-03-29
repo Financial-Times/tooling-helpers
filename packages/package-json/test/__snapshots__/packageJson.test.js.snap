@@ -1,0 +1,577 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`removeDependency removes existing pkg 1`] = `
+Object {
+  "event": "removeDependency",
+  "field": "devDependencies",
+  "pkg": "prettier",
+  "version": "1.16.3",
+  "written": false,
+}
+`;
+
+exports[`removeDependency removes existing pkg 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`removeDependency throws error if dependencyField does not exist 1`] = `"PackageJson#removeDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
+
+exports[`removeDependency throws error if pkg does not exist 1`] = `"PackageJson#removeDependency: Dependency 'ebi' is absent."`;
+
+exports[`requireDependency creates new dependency if absent 1`] = `
+Object {
+  "changeWritten": false,
+  "event": "requireDependency",
+  "field": "devDependencies",
+  "pkg": "ebi",
+  "previousVersionRange": undefined,
+  "version": "1.1.0",
+}
+`;
+
+exports[`requireDependency creates new dependency if absent 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "ebi": "1.1.0",
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`requireDependency throws error if dependencyField does not exist 1`] = `"PackageJson#addDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
+
+exports[`requireDependency updates version of existing dependency 1`] = `
+Object {
+  "changeWritten": false,
+  "event": "requireDependency",
+  "field": "devDependencies",
+  "pkg": "prettier",
+  "previousVersionRange": "1.16.3",
+  "version": "1.16.4",
+}
+`;
+
+exports[`requireDependency updates version of existing dependency 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.4",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`requireScript creates new script if absent 1`] = `
+Object {
+  "alreadyExisted": false,
+  "changeWritten": false,
+  "event": "requireScript",
+  "lifecycleEvent": "unit-test",
+}
+`;
+
+exports[`requireScript creates new script if absent 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+    "unit-test": "test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`requireScript creates new script if no previous scripts 1`] = `
+Object {
+  "alreadyExisted": false,
+  "changeWritten": false,
+  "event": "requireScript",
+  "lifecycleEvent": "test",
+}
+`;
+
+exports[`requireScript creates new script if no previous scripts 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "test": "npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`requireScript creates new script if no previous scripts 3`] = `
+Object {
+  "test": "npm run unit-test",
+}
+`;
+
+exports[`requireScript replaces script if present 1`] = `
+Object {
+  "alreadyExisted": true,
+  "changeWritten": false,
+  "event": "requireScript",
+  "lifecycleEvent": "test",
+}
+`;
+
+exports[`requireScript replaces script if present 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`setField logs a field to create if field does not exist 1`] = `
+Object {
+  "changeWritten": false,
+  "event": "setField",
+  "field": "private",
+  "previousValue": undefined,
+}
+`;
+
+exports[`setField logs a field to create if field does not exist 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi",
+  "private": true,
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
+
+exports[`setField logs a field to write if field exists 1`] = `
+Object {
+  "changeWritten": false,
+  "event": "setField",
+  "field": "name",
+  "previousValue": "ebi",
+}
+`;
+
+exports[`setField logs a field to write if field exists 2`] = `
+Object {
+  "bin": "./bin/ebi.js",
+  "bugs": Object {
+    "url": "https://github.com/Financial-Times/ebi/issues",
+  },
+  "contributors": Array [
+    Object {
+      "email": "jennifer.johnson@ft.com",
+      "name": "Jennifer Johnson",
+    },
+    Object {
+      "email": "jennifer.shepherd@ft.com",
+      "name": "Jennifer Shepherd",
+    },
+    Object {
+      "email": "tak.tran@ft.com",
+      "name": "Tak Tran",
+    },
+  ],
+  "dependencies": Object {
+    "@octokit/plugin-throttling": "^2.4.0",
+    "@octokit/rest": "^16.15.0",
+    "lodash": "^4.17.11",
+    "nock": "^10.0.6",
+    "yargs": "^13.1.0",
+  },
+  "description": "A command line tool that searches files within GitHub repositories",
+  "devDependencies": Object {
+    "eslint": "^5.14.1",
+    "eslint-config-prettier": "^4.0.0",
+    "eslint-plugin-no-only-tests": "^2.1.0",
+    "husky": "^1.3.1",
+    "jest": "^24.1.0",
+    "prettier": "1.16.3",
+  },
+  "engines": Object {
+    "node": "10.15.0",
+  },
+  "homepage": "https://github.com/Financial-Times/ebi#readme",
+  "husky": Object {
+    "hooks": Object {
+      "pre-commit": "npm run lint",
+    },
+  },
+  "license": "MIT",
+  "name": "ebi v2",
+  "repository": Object {
+    "type": "git",
+    "url": "git+https://github.com/Financial-Times/ebi.git",
+  },
+  "scripts": Object {
+    "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
+    "lint": "eslint *.js src/ lib/ test/",
+    "lint-fix": "eslint --fix *.js src/ lib/ test/",
+    "test": "npm run lint && npm run unit-test",
+  },
+  "version": "0.0.0",
+}
+`;
