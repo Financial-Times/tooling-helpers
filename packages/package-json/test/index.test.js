@@ -1,10 +1,36 @@
-const loadPackageJson = require("../src/index.new.js");
+const loadPackageJson = require("../src/index.js");
 
 let packageJson;
 
 beforeEach(() => {
   packageJson = loadPackageJson({
-    filepath: `${__dirname}/testPackageJson.json`
+    filepath: `${__dirname}/fixtures/testPackageJson.json`
+  });
+});
+
+describe("loadPackageJson", () => {
+  test("throws an error if the filepath option is missing", () => {
+    expect(() => {
+      loadPackageJson();
+    }).toThrowErrorMatchingSnapshot();
+  });
+
+  test("returns object with methods for manipulating package.json", () => {
+    const packageJson = loadPackageJson({
+      filepath: `${__dirname}/fixtures/testPackageJson.json`
+    });
+    expect(packageJson).toEqual(expect.any(Object));
+    Object.values(packageJson).forEach((method) => {
+      expect(method).toEqual(expect.any(Function));
+    });
+  });
+
+  test("loads the specified package.json file", () => {
+    const packageJson = loadPackageJson({
+      filepath: `${__dirname}/fixtures/testPackageJson.json`
+    });
+    expect(packageJson.getDocument().name).toEqual('ebi');
+    expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
 
@@ -115,7 +141,7 @@ describe("requireScript", () => {
 
   test("creates new script if no previous scripts", () => {
     const packageJsonWithoutScripts = loadPackageJson({
-      filepath: `${__dirname}/testPackageJsonNoScripts.json`
+      filepath: `${__dirname}/fixtures/testPackageJsonNoScripts.json`
     });
     const changelogEntry = packageJsonWithoutScripts.requireScript({
       lifecycleEvent: "test",
@@ -141,8 +167,15 @@ describe("requireScript", () => {
 });
 
 describe("hasChangesToWrite", () => {
-  test("something", () => {
-
+  test("returns true when there are pending changes to write to package.json", () =>{
+    packageJson.removeDependency({
+      pkg: "prettier",
+      field: "devDependencies"
+    });
+    expect(packageJson.hasChangesToWrite()).toEqual(true);
+  });
+  test("returns false when there are no pending changes to write to package.json", () =>{
+    expect(packageJson.hasChangesToWrite()).toEqual(false);
   });
 });
 
