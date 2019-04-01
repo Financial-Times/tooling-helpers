@@ -32,7 +32,9 @@ describe('changelog object', () => {
         });
         expect(changelogEntry.get()).toEqual({
             event: 'setField',
-            changeWritten: false
+            alreadyExisted: false,
+            changeWritten: false,
+            previousValue: undefined
         });
     });
     // TODO: Rename
@@ -41,5 +43,24 @@ describe('changelog object', () => {
             event: 'setField'
         });
         expect(changelogEntry.get('event')).toEqual('setField');
+    });
+    test('set method changes a field in the changelog entry', () => {
+        const changelogEntry = changelog.createEntry({
+            event: 'setField',
+            meta: {
+              field: 'license'
+            }
+        });
+        changelogEntry.set('previousValue', 'MIT');
+        expect(changelogEntry.get('previousValue')).toEqual('MIT');
+    });
+});
+
+describe('getChangelog', () => {
+    test('returns an array of raw changelog objects', () => {
+        changelog.createEntry({ event: 'setField' });
+        const changelogEntries = changelog.get();
+        expect(changelogEntries).toEqual(expect.any(Array));
+        expect(changelogEntries).toMatchSnapshot();
     });
 });

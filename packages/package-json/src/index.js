@@ -176,7 +176,7 @@ module.exports = function loadPackageJson(options = {}) {
             pkg,
             field,
             version: null,
-            written: false
+            changeWritten: false
         };
 
         if (typeof dependencies[pkg] !== "undefined") {
