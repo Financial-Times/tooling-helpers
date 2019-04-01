@@ -139,3 +139,15 @@ describe("requireScript", () => {
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
 });
+
+describe("hasChangesToWrite", () => {
+  test("something", () => {
+
+  });
+});
+
+describe("writeChanges", () => {
+  test("something", () => {
+
+  });
+});
