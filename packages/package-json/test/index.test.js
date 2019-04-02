@@ -187,15 +187,9 @@ describe("hasChangesToWrite", () => {
     });
     expect(packageJson.hasChangesToWrite()).toEqual(true);
   });
+
   test("returns false when there are no pending changes to write to package.json", () =>{
     expect(packageJson.hasChangesToWrite()).toEqual(false);
   });
 
-});
-
-// TODO:
-describe("writeChanges", () => {
-  test("something", () => {
-
-  });
 });

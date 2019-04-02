@@ -28,7 +28,13 @@ module.exports = function loadPackageJson(options = {}) {
 
     const changelog = createChangelog();
 
-    const originalContents = require(options.filepath);
+    let originalContents;
+    try {
+        originalContents = JSON.parse(fs.readFileSync(options.filepath, { encoding: 'utf-8' }));
+    } catch (err) {
+        throw new Error(`package-json#loadPackageJson: Unable to parse file as JSON: ${options.filepath}`);
+    }
+
     let previousContents = deepCloneObject(originalContents);
     const workingContents = deepCloneObject(originalContents);
 
@@ -59,7 +65,11 @@ module.exports = function loadPackageJson(options = {}) {
      * @returns boolean
      */
     function writeChanges() {
-        fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents) + "\n");
+        try {
+            fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents) + "\n");
+        } catch (err) {
+            throw new Error(`package-json#writeChanges: Error writing changes to file '${options.filepath}'\n\n${err.message}`);
+        }
 
         previousContents = deepCloneObject(workingContents);
 
@@ -118,6 +128,11 @@ module.exports = function loadPackageJson(options = {}) {
             );
         }
 
+        // TODO: Review and test this
+        if (!workingContents[field]) {
+            workingContents[field] = {};
+        }
+
         const dependencies = workingContents[field];
 
         const changes = { event: "requireDependency", field, pkg, version };
@@ -140,7 +155,7 @@ module.exports = function loadPackageJson(options = {}) {
      * @param {string} options.pkg
      * @param {string} options.field
      *
-     * @returns {object} - changelog entry
+     * @returns {object|boolean} - changelog entry or `false` if dependency doesn't exist
      */
     function removeDependency({ pkg, field }) {
         if (!dependencyFields.includes(field)) {
@@ -151,6 +166,11 @@ module.exports = function loadPackageJson(options = {}) {
             );
         }
 
+        // TODO: Review and test this
+        if (!workingContents[field]) {
+            return false;
+        }
+
         const dependencies = workingContents[field];
 
         const changes = { event: "removeDependency", pkg, field };
@@ -159,11 +179,7 @@ module.exports = function loadPackageJson(options = {}) {
             changes.previousValue = dependencies[pkg];
             delete dependencies[pkg];
         } else {
-            throw new Error(
-                `package-json#removeDependency: Dependency '${pkg}' is absent.`
-            );
-            // TODO: What should we do if the dependency doesn't exist?
-            console.log('pkg does not exist!')
+            return false;
         }
 
         return changelog.createEntry(changes);
