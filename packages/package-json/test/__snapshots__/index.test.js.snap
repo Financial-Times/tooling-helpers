@@ -61,15 +61,18 @@ Object {
 }
 `;
 
-exports[`loadPackageJson throws an error if the filepath option is missing 1`] = `"PackageJson#constructor: \`filepath\` option must be specified"`;
+exports[`loadPackageJson throws an error if the filepath option is missing 1`] = `"package-json#constructor: \`filepath\` option must be specified"`;
 
 exports[`removeDependency removes existing pkg 1`] = `
 Object {
+  "alreadyExisted": false,
+  "changeWritten": false,
   "event": "removeDependency",
   "field": "devDependencies",
-  "pkg": "prettier",
-  "version": "1.16.3",
-  "written": false,
+  "meta": Object {
+    "pkg": "prettier",
+  },
+  "previousValue": "1.16.3",
 }
 `;
 
@@ -133,18 +136,20 @@ Object {
 }
 `;
 
-exports[`removeDependency throws error if dependencyField does not exist 1`] = `"PackageJson#removeDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
+exports[`removeDependency throws error if dependencyField does not exist 1`] = `"package-json#removeDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
 
-exports[`removeDependency throws error if pkg does not exist 1`] = `"PackageJson#removeDependency: Dependency 'ebi' is absent."`;
+exports[`removeDependency throws error if pkg does not exist 1`] = `"package-json#removeDependency: Dependency 'ebi' is absent."`;
 
 exports[`requireDependency creates new dependency if absent 1`] = `
 Object {
+  "alreadyExisted": false,
   "changeWritten": false,
   "event": "requireDependency",
   "field": "devDependencies",
-  "pkg": "ebi",
-  "previousVersionRange": undefined,
-  "version": "1.1.0",
+  "meta": Object {
+    "pkg": "nock",
+    "version": "10.0.6",
+  },
 }
 `;
 
@@ -177,12 +182,12 @@ Object {
   },
   "description": "A command line tool that searches files within GitHub repositories",
   "devDependencies": Object {
-    "ebi": "1.1.0",
     "eslint": "^5.14.1",
     "eslint-config-prettier": "^4.0.0",
     "eslint-plugin-no-only-tests": "^2.1.0",
     "husky": "^1.3.1",
     "jest": "^24.1.0",
+    "nock": "10.0.6",
     "prettier": "1.16.3",
   },
   "engines": Object {
@@ -210,16 +215,19 @@ Object {
 }
 `;
 
-exports[`requireDependency throws error if dependencyField does not exist 1`] = `"PackageJson#addDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
+exports[`requireDependency throws error if dependencyField does not exist 1`] = `"package-json#requireDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
 
 exports[`requireDependency updates version of existing dependency 1`] = `
 Object {
+  "alreadyExisted": true,
   "changeWritten": false,
   "event": "requireDependency",
   "field": "devDependencies",
-  "pkg": "prettier",
-  "previousVersionRange": "1.16.3",
-  "version": "1.16.4",
+  "meta": Object {
+    "pkg": "prettier",
+    "version": "1.16.4",
+  },
+  "previousValue": "1.16.3",
 }
 `;
 
@@ -289,7 +297,10 @@ Object {
   "alreadyExisted": false,
   "changeWritten": false,
   "event": "requireScript",
-  "lifecycleEvent": "unit-test",
+  "field": "scripts",
+  "meta": Object {
+    "lifecycleEvent": "unit-test",
+  },
 }
 `;
 
@@ -360,7 +371,10 @@ Object {
   "alreadyExisted": false,
   "changeWritten": false,
   "event": "requireScript",
-  "lifecycleEvent": "test",
+  "field": "scripts",
+  "meta": Object {
+    "lifecycleEvent": "test",
+  },
 }
 `;
 
@@ -427,7 +441,10 @@ Object {
   "alreadyExisted": true,
   "changeWritten": false,
   "event": "requireScript",
-  "lifecycleEvent": "test",
+  "field": "scripts",
+  "meta": Object {
+    "lifecycleEvent": "test",
+  },
 }
 `;
 
@@ -494,10 +511,11 @@ Object {
 
 exports[`setField logs a field to create if field does not exist 1`] = `
 Object {
+  "alreadyExisted": false,
   "changeWritten": false,
   "event": "setField",
   "field": "private",
-  "previousValue": undefined,
+  "meta": Object {},
 }
 `;
 
@@ -565,9 +583,11 @@ Object {
 
 exports[`setField logs a field to write if field exists 1`] = `
 Object {
+  "alreadyExisted": false,
   "changeWritten": false,
   "event": "setField",
   "field": "name",
+  "meta": Object {},
   "previousValue": "ebi",
 }
 `;

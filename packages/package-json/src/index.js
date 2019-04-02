@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
+const createChangelog = require("./lib/changelog");
 const { deepCloneObject, formatObjectAsJson } = require("./lib/helpers");
 
 const dependencyFields = [
@@ -19,13 +20,13 @@ const dependencyFields = [
 module.exports = function loadPackageJson(options = {}) {
     if (!options.filepath) {
         throw new Error(
-            "PackageJson#constructor: `filepath` option must be specified"
+            "package-json#constructor: `filepath` option must be specified"
         );
     }
 
     options.filepath = path.resolve(options.filepath);
 
-    const changelog = [];
+    const changelog = createChangelog();
 
     const originalContents = require(options.filepath);
     let previousContents = deepCloneObject(originalContents);
@@ -88,25 +89,18 @@ module.exports = function loadPackageJson(options = {}) {
      * @returns {object} - changelog entry
      */
     function setField(field, value) {
-        const changelogEntry = {
-            event: "setField",
-            field,
-            previousValue: undefined,
-            changeWritten: false
-        };
+        const changes = { event: "setField", field };
 
         const fieldAlreadyExists =
             typeof workingContents[field] !== "undefined";
 
         if (fieldAlreadyExists) {
-            changelogEntry.previousValue = workingContents[field];
+            changes.previousValue = workingContents[field];
         }
 
         workingContents[field] = value;
 
-        changelog.push(changelogEntry);
-
-        return changelogEntry;
+        return changelog.createEntry(changes);
     }
 
     /**
@@ -122,7 +116,7 @@ module.exports = function loadPackageJson(options = {}) {
     function requireDependency({ pkg, version, field }) {
         if (!dependencyFields.includes(field)) {
             throw new Error(
-                `PackageJson#addDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+                `package-json#requireDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
                 ", "
                 )}`
             );
@@ -130,25 +124,17 @@ module.exports = function loadPackageJson(options = {}) {
 
         const dependencies = workingContents[field];
 
-        const changelogEntry = {
-            event: "requireDependency",
-            pkg,
-            field,
-            version,
-            previousVersionRange: undefined,
-            changeWritten: false
-        };
+        const changes = { event: "requireDependency", field, pkg, version };
 
-        const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
+        const dependencyAlreadyExists = (typeof dependencies[pkg] !== "undefined");
+        changes.alreadyExisted = dependencyAlreadyExists;
         if (dependencyAlreadyExists) {
-            changelogEntry.previousVersionRange = dependencies[pkg];
+            changes.previousValue = dependencies[pkg];
         }
 
         dependencies[pkg] = version;
 
-        changelog.push(changelogEntry);
-
-        return changelogEntry;
+        return changelog.createEntry(changes);
     }
 
     /**
@@ -163,7 +149,7 @@ module.exports = function loadPackageJson(options = {}) {
     function removeDependency({ pkg, field }) {
         if (!dependencyFields.includes(field)) {
             throw new Error(
-                `PackageJson#removeDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+                `package-json#removeDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
                 ", "
                 )}`
             );
@@ -171,28 +157,20 @@ module.exports = function loadPackageJson(options = {}) {
 
         const dependencies = workingContents[field];
 
-        const changelogEntry = {
-            event: "removeDependency",
-            pkg,
-            field,
-            version: null,
-            changeWritten: false
-        };
+        const changes = { event: "removeDependency", pkg, field };
 
         if (typeof dependencies[pkg] !== "undefined") {
-            changelogEntry.version = dependencies[pkg];
+            changes.previousValue = dependencies[pkg];
             delete dependencies[pkg];
         } else {
             throw new Error(
-                `PackageJson#removeDependency: Dependency '${pkg}' is absent.`
+                `package-json#removeDependency: Dependency '${pkg}' is absent.`
             );
             // TODO: What should we do if the dependency doesn't exist?
             console.log('pkg does not exist!')
         }
 
-        changelog.push(changelogEntry);
-
-        return changelogEntry;
+        return changelog.createEntry(changes);
     }
 
     /**
@@ -207,12 +185,7 @@ module.exports = function loadPackageJson(options = {}) {
      * @returns {object} - changelog entry
      */
     function requireScript({ lifecycleEvent, command }) {
-        const changelogEntry = {
-            event: "requireScript",
-            lifecycleEvent,
-            alreadyExisted: false,
-            changeWritten: false
-        };
+        const changes = { event: "requireScript", field: "scripts", lifecycleEvent };
 
         const scriptsFieldExists =
             typeof workingContents.scripts !== "undefined";
@@ -226,13 +199,11 @@ module.exports = function loadPackageJson(options = {}) {
         const lifecycleEventAlreadyExists =
             typeof scripts[lifecycleEvent] !== "undefined";
 
-        changelogEntry.alreadyExisted = lifecycleEventAlreadyExists;
+        changes.alreadyExisted = lifecycleEventAlreadyExists;
 
         scripts[lifecycleEvent] = command;
 
-        changelog.push(changelogEntry);
-
-        return changelogEntry;
+        return changelog.createEntry(changes);
     }
 
     return {

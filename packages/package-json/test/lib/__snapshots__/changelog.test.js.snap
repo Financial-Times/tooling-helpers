@@ -1,11 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getChangelog returns an array of raw changelog objects 1`] = `
+exports[`get returns an array of changelog objects 1`] = `
 Array [
   Object {
     "alreadyExisted": false,
     "changeWritten": false,
     "event": "setField",
+    "meta": Object {},
   },
 ]
 `;

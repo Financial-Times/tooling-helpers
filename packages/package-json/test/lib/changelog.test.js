@@ -16,51 +16,44 @@ describe('createChangelog', () => {
 });
 
 describe('createEntry', () => {
-    test('return a changelog object', () => {
+    test('returns a changelog object', () => {
         const changelogEntry = changelog.createEntry({
             event: 'setField'
         });
         expect(changelogEntry).toEqual(expect.any(Object));
-    });
-});
-
-describe('changelog object', () => {
-    // TODO: Rename
-    test('get method returns raw changelog object', () => {
-        const changelogEntry = changelog.createEntry({
-            event: 'setField'
-        });
-        expect(changelogEntry.get()).toEqual({
+        expect(changelogEntry).toEqual({
             event: 'setField',
             alreadyExisted: false,
             changeWritten: false,
-            previousValue: undefined
+            previousValue: undefined,
+            meta: {}
         });
-    });
-    // TODO: Rename
-    test('get method returns changelog field', () => {
-        const changelogEntry = changelog.createEntry({
-            event: 'setField'
-        });
-        expect(changelogEntry.get('event')).toEqual('setField');
-    });
-    test('set method changes a field in the changelog entry', () => {
-        const changelogEntry = changelog.createEntry({
-            event: 'setField',
-            meta: {
-              field: 'license'
-            }
-        });
-        changelogEntry.set('previousValue', 'MIT');
-        expect(changelogEntry.get('previousValue')).toEqual('MIT');
     });
 });
 
-describe('getChangelog', () => {
-    test('returns an array of raw changelog objects', () => {
+describe('get', () => {
+    test('returns an array of changelog objects', () => {
         changelog.createEntry({ event: 'setField' });
         const changelogEntries = changelog.get();
         expect(changelogEntries).toEqual(expect.any(Array));
         expect(changelogEntries).toMatchSnapshot();
+    });
+});
+
+describe.skip('getAsMessages', () => {
+    test('...', () => {
+
+    });
+});
+
+describe.skip('getLastEntry', () => {
+    test('...', () => {
+
+    });
+});
+
+describe.skip('getLastEntryAsMessage', () => {
+    test('...', () => {
+
     });
 });
