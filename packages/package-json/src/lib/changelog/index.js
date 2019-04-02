@@ -3,31 +3,28 @@ const { deepCloneObject } = require("./helpers");
 /**
  * Functions for creating human-friendly messages from changelog objects.
  */
-const events = {
-  setField: {
-    formatAsMessage: ({ field, previousValue }) => {
-      let message = `Set value for field '${field}'`;
-      message += previousValue
-        ? ` (overwrote existing value)`
-        : " (new field)";
-      return message;
-    }
-  },
-  requireDependency: {
-    formatAsMessage: ({ pkg, field, version, previousVersionRange }) => {
-      let message = `Required package ${pkg}@${version} in ${field}`;
-      message += previousVersionRange
-        ? `, previously ${previousVersionRange}`
-        : " (new dependency)";
-      return message;
-    }
-  },
-  removeDependency: ({ pkg, field }) => {
-    let message = `Removed package ${pkg} from ${field}`;
+// TODO: Write tests for these
+const messageFormatters = {
+  setField: ({ field, previousValue }) => {
+    let message = `Set value for field '${field}'`;
+    message += previousValue
+      ? ` (overwrote existing value)`
+      : " (new field)";
     return message;
   },
-  requireScript: ({ lifecycleEvent, alreadyExisted }) => {
-    let message = `Required script for lifecycle event '${lifecycleEvent}'`;
+  requireDependency: ({ field, previousVersionRange, meta }) => {
+    let message = `Required package ${meta.pkg}@${meta.version} in ${field}`;
+    message += previousVersionRange
+      ? `, previously ${previousVersionRange}`
+      : " (new dependency)";
+    return message;
+  },
+  removeDependency: ({ field, meta }) => {
+    let message = `Removed package ${meta.pkg} from ${field}`;
+    return message;
+  },
+  requireScript: ({ alreadyExisted, meta }) => {
+    let message = `Required script for lifecycle event '${meta.lifecycleEvent}'`;
     message += alreadyExisted
       ? ` (overwrote existing command)`
       : " (new script)";
@@ -35,7 +32,7 @@ const events = {
   }
 };
 
-const eventTypes = Object.keys(events);
+const eventTypes = Object.keys(messageFormatters);
 
 /**
  * Format a changelog entry as a human-friendly message.
@@ -44,13 +41,23 @@ const eventTypes = Object.keys(events);
  */
 // TODO: Write tests
 function formatEntryAsMessage(entry) {
-  return events[entry.event].formatAsMessage(entry);
+  return messageFormatters[entry.event](entry);
 }
 
 module.exports = function createChangelog() {
 
   const changelog = [];
 
+  /**
+   * Create a new changelog entry.
+   *
+   * @param {object} entry 
+   * @param {string} entry.event - ??
+   * @param {string} entry.field - ??
+   * @param {string} [entry.alreadyExisted] - ??
+   * @param {string} [entry.previousValue] - ??
+   * @param {*} [entry.*] - ??
+   */
   function createEntry({
     event,
     field,
@@ -59,7 +66,10 @@ module.exports = function createChangelog() {
     ...meta
   }) {
     if (!eventTypes.includes(event)) {
-      throw new Error(`changelog: Invalid event type: ${event}`);
+      throw new Error(`changelog#createEntry: Entry has invalid \`event\` type: ${event}`);
+    }
+    if (!field) {
+      throw new Error('changelog#createEntry: Entry is missing a `field` option');
     }
 
     const entry = {
@@ -68,6 +78,7 @@ module.exports = function createChangelog() {
       meta,
       previousValue,
       alreadyExisted,
+      // TODO: Is this worth keeping?
       changeWritten: false
     };
 
@@ -77,7 +88,7 @@ module.exports = function createChangelog() {
   }
 
   /**
-   * Get all changelog entries.
+   * Get all changelog entry objects.
    *
    * @returns {Array<object>}
    */
@@ -90,7 +101,6 @@ module.exports = function createChangelog() {
    *
    * @returns {Array<string>}
    */
-  // TODO: Write tests
   function getAsMessages() {
     return changelog.map(entry => formatEntryAsMessage(entry));
   }
@@ -100,7 +110,6 @@ module.exports = function createChangelog() {
    *
    * @returns {object}
    */
-  // TODO: Write tests
   function getLastEntry() {
     if (changelog.length === 0) {
       return {};
@@ -113,7 +122,6 @@ module.exports = function createChangelog() {
    *
    * @returns {string}
    */
-  // TODO: Write tests
   function getLastEntryAsMessage() {
     return formatEntryAsMessage(getLastEntry());
   }
