@@ -1,3 +1,7 @@
+/**
+ * TODO: Explain why this test suite is separate
+ */
+
 const loadPackageJson = require("../src/index.js");
 
 const { fs, vol } = require('memfs');

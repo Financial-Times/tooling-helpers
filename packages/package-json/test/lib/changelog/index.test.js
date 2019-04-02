@@ -15,6 +15,14 @@ describe('createChangelog', () => {
         });
     });
 
+    test.skip('throws an error if the `event` value is invalid', () => {
+
+    });
+
+    test.skip('throws an error if the `field` property is missing', () => {
+
+    });
+
 });
 
 describe('createEntry', () => {
@@ -94,6 +102,10 @@ describe('getLastEntry', () => {
         expect(lastChangelogEntry).toEqual(changelog.get().pop());
     });
 
+    test.skip('returns an empty object if there are no entries in the changelog', () => {
+
+    });
+
 });
 
 describe('getLastEntryAsMessage', () => {
@@ -114,6 +126,10 @@ describe('getLastEntryAsMessage', () => {
         expect(lastChangelogEntry).toEqual(expect.any(String));
         expect(lastChangelogEntry).toMatchSnapshot();
         expect(lastChangelogEntry).toEqual(changelog.getAsMessages().pop());
+    });
+
+    test.skip('returns an empty string if there are no entries in the changelog', () => {
+
     });
 
 });
