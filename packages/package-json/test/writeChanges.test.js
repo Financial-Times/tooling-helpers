@@ -1,9 +1,10 @@
 const loadPackageJson = require("../src/index.js");
 
 const { fs, vol } = require('memfs');
-const actualFs = jest.requireActual('fs');
+process.env.MEMFS_DONT_WARN = true;
 
 jest.mock('fs', () => require('memfs').fs);
+const actualFs = jest.requireActual('fs');
 
 let mockFsWriteFileSync;
 
@@ -22,7 +23,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe.only("writeChanges", () => {
+describe("writeChanges", () => {
 
   test("writes updated package.json document to the file system", () => {
 
@@ -48,6 +49,10 @@ describe.only("writeChanges", () => {
     const packageJsonDocumentBefore = packageJsonBefore.getDocument();
     const packageJsonDocumentAfter = packageJsonAfter.getDocument();
     expect(packageJsonDocumentBefore).toEqual(packageJsonDocumentAfter);
+  });
+
+  test.skip("throws an error if it is unable to write to the package.json file", () => {
+
   });
 
 });

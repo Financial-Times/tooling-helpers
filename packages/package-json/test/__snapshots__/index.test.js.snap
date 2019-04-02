@@ -61,7 +61,7 @@ Object {
 }
 `;
 
-exports[`loadPackageJson throws an error if the filepath option is missing 1`] = `"package-json#constructor: \`filepath\` option must be specified"`;
+exports[`loadPackageJson throws an error if the \`filepath\` option is missing 1`] = `"package-json#constructor: \`filepath\` option must be specified"`;
 
 exports[`removeDependency removes existing pkg 1`] = `
 Object {
@@ -136,8 +136,6 @@ Object {
 `;
 
 exports[`removeDependency throws error if dependencyField does not exist 1`] = `"package-json#removeDependency: Invalid field specified 'testDependencies'. Valid fields: dependencies, devDependencies, optionalDependencies, peerDependencies"`;
-
-exports[`removeDependency throws error if pkg does not exist 1`] = `"package-json#removeDependency: Dependency 'ebi' is absent."`;
 
 exports[`requireDependency creates new dependency if absent 1`] = `
 Object {

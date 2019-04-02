@@ -10,7 +10,7 @@ beforeEach(() => {
 
 describe("loadPackageJson", () => {
 
-  test("throws an error if the filepath option is missing", () => {
+  test("throws an error if the `filepath` option is missing", () => {
     expect(() => {
       loadPackageJson();
     }).toThrowErrorMatchingSnapshot();
@@ -32,6 +32,10 @@ describe("loadPackageJson", () => {
     });
     expect(packageJson.getDocument().name).toEqual('ebi');
     expect(packageJson.getDocument()).toMatchSnapshot();
+  });
+
+  test.skip("throws an error if is unable to parse the package.json", () => {
+
   });
 
 });
@@ -113,14 +117,14 @@ describe("removeDependency", () => {
     }).toThrowErrorMatchingSnapshot();
   });
 
-  test("throws error if pkg does not exist", () => {
-    expect(() => {
+  test("returns boolean false if pkg does not exist", () => {
+    expect(
       packageJson.removeDependency({
         pkg: "ebi",
         version: "1.1.0",
         field: "devDependencies"
-      });
-    }).toThrowErrorMatchingSnapshot();
+      })
+    ).toEqual(false);
   });
 
   test("removes existing pkg", () => {
