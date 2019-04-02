@@ -16,6 +16,22 @@ describe("loadPackageJson", () => {
     }).toThrowErrorMatchingSnapshot();
   });
 
+  test("throws an error if is unable to read the specified file", () => {
+    expect(() => {
+      loadPackageJson({
+        filepath: `${__dirname}/fixtures/non-existent-package.json`
+      });
+    }).toThrowErrorMatchingSnapshot();
+  });
+
+  test("throws an error if is unable to parse the specified file as JSON", () => {
+    expect(() => {
+      loadPackageJson({
+        filepath: `${__dirname}/fixtures/bad-package.json`
+      });
+    }).toThrowErrorMatchingSnapshot();
+  });
+
   test("returns object with methods for manipulating package.json", () => {
     const packageJson = loadPackageJson({
       filepath: `${__dirname}/fixtures/testPackageJson.json`
@@ -32,10 +48,6 @@ describe("loadPackageJson", () => {
     });
     expect(packageJson.getDocument().name).toEqual('ebi');
     expect(packageJson.getDocument()).toMatchSnapshot();
-  });
-
-  test.skip("throws an error if is unable to parse the package.json", () => {
-
   });
 
 });
@@ -103,11 +115,22 @@ describe("requireDependency", () => {
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
 
+  test("creates field and new dependency if both are absent", () => {
+    const changelogEntry = packageJson.requireDependency({
+      pkg: "nock",
+      version: "10.0.6",
+      field: "peerDependencies"
+    });
+    expect(changelogEntry).toMatchSnapshot();
+    expect(changelogEntry.alreadyExisted).toEqual(false);
+    expect(packageJson.getDocument()).toMatchSnapshot();
+  });
+
 });
 
 describe("removeDependency", () => {
 
-  test("throws error if dependencyField does not exist", () => {
+  test("throws error if `field` is not a valid field for dependencies", () => {
     expect(() => {
       packageJson.removeDependency({
         pkg: "ebi",
@@ -123,6 +146,16 @@ describe("removeDependency", () => {
         pkg: "ebi",
         version: "1.1.0",
         field: "devDependencies"
+      })
+    ).toEqual(false);
+  });
+
+  test("returns boolean false if `field` is valid but does not exist", () => {
+    expect(
+      packageJson.removeDependency({
+        pkg: "ebi",
+        version: "1.1.0",
+        field: "peerDependencies"
       })
     ).toEqual(false);
   });

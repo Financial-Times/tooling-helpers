@@ -12,20 +12,20 @@ beforeEach(() => {
     mockFsWriteFileSync = jest.spyOn(fs, 'writeFileSync');
 
     const fixturePackageJson = `${__dirname}/fixtures/testPackageJson.json`;
-    const volume = {
+    vol.fromJSON({
         'package.json': actualFs.readFileSync(fixturePackageJson, { encoding: 'utf-8' })
-    };
-    vol.fromJSON(volume);
+    });
 });
 
 afterEach(() => {
+    vol.reset();
     mockFsWriteFileSync.mockRestore();
     jest.clearAllMocks();
 });
 
 describe("writeChanges", () => {
 
-  test("writes updated package.json document to the file system", () => {
+  test("writes package.json document changes to the file system", () => {
 
     const packageJsonBefore = loadPackageJson({
       filepath: 'package.json'
@@ -51,8 +51,26 @@ describe("writeChanges", () => {
     expect(packageJsonDocumentBefore).toEqual(packageJsonDocumentAfter);
   });
 
-  test.skip("throws an error if it is unable to write to the package.json file", () => {
+  test("throws an error if it is unable to write to the package.json file", () => {
 
+    mockFsWriteFileSync.mockImplementation((filepath) => {
+        throw new Error(`EACCES: permission denied, open '${filepath}'`);
+    });
+
+    const packageJson = loadPackageJson({
+      filepath: 'package.json'
+    });
+
+    packageJson.removeDependency({
+      pkg: "prettier",
+      field: "devDependencies"
+    });
+
+    expect(() => {
+        packageJson.writeChanges();
+    }).toThrowErrorMatchingSnapshot();
+
+    expect(mockFsWriteFileSync).toHaveBeenCalled();
   });
 
 });

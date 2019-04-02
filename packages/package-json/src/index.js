@@ -32,7 +32,7 @@ module.exports = function loadPackageJson(options = {}) {
     try {
         originalContents = JSON.parse(fs.readFileSync(options.filepath, { encoding: 'utf-8' }));
     } catch (err) {
-        throw new Error(`package-json#loadPackageJson: Unable to parse file as JSON: ${options.filepath}`);
+        throw new Error(`package-json#loadPackageJson: Unable to read and parse file: ${options.filepath}\n\n${err.message}`);
     }
 
     let previousContents = deepCloneObject(originalContents);
@@ -128,7 +128,6 @@ module.exports = function loadPackageJson(options = {}) {
             );
         }
 
-        // TODO: Review and test this
         if (!workingContents[field]) {
             workingContents[field] = {};
         }
@@ -166,7 +165,6 @@ module.exports = function loadPackageJson(options = {}) {
             );
         }
 
-        // TODO: Review and test this
         if (!workingContents[field]) {
             return false;
         }
