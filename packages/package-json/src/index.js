@@ -61,10 +61,6 @@ module.exports = function loadPackageJson(options = {}) {
     function writeChanges() {
         fs.writeFileSync(options.filepath, formatObjectAsJson(workingContents) + "\n");
 
-        for (let entry of changelog) {
-            entry.changeWritten = true;
-        }
-
         previousContents = deepCloneObject(workingContents);
 
         return true;

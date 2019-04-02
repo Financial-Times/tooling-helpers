@@ -22,6 +22,7 @@ module.exports = function createChangelog() {
    * @param {string} [entry.previousValue] - ??
    * @param {*} [entry.*] - ??
    */
+  // TODO: This shouldn't be exposed outside of `loadPackageJson`
   function createEntry({
     event,
     field,
@@ -41,9 +42,7 @@ module.exports = function createChangelog() {
       field,
       meta,
       previousValue,
-      alreadyExisted,
-      // TODO: Is this worth keeping?
-      changeWritten: false
+      alreadyExisted
     };
 
     changelog.push(entry);

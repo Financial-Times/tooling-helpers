@@ -66,7 +66,6 @@ exports[`loadPackageJson throws an error if the filepath option is missing 1`] =
 exports[`removeDependency removes existing pkg 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "removeDependency",
   "field": "devDependencies",
   "meta": Object {
@@ -143,7 +142,6 @@ exports[`removeDependency throws error if pkg does not exist 1`] = `"package-jso
 exports[`requireDependency creates new dependency if absent 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "requireDependency",
   "field": "devDependencies",
   "meta": Object {
@@ -220,7 +218,6 @@ exports[`requireDependency throws error if dependencyField does not exist 1`] = 
 exports[`requireDependency updates version of existing dependency 1`] = `
 Object {
   "alreadyExisted": true,
-  "changeWritten": false,
   "event": "requireDependency",
   "field": "devDependencies",
   "meta": Object {
@@ -295,7 +292,6 @@ Object {
 exports[`requireScript creates new script if absent 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "requireScript",
   "field": "scripts",
   "meta": Object {
@@ -369,7 +365,6 @@ Object {
 exports[`requireScript creates new script if no previous scripts 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "requireScript",
   "field": "scripts",
   "meta": Object {
@@ -439,7 +434,6 @@ Object {
 exports[`requireScript replaces script if present 1`] = `
 Object {
   "alreadyExisted": true,
-  "changeWritten": false,
   "event": "requireScript",
   "field": "scripts",
   "meta": Object {
@@ -512,7 +506,6 @@ Object {
 exports[`setField logs a field to create if field does not exist 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "setField",
   "field": "private",
   "meta": Object {},
@@ -584,7 +577,6 @@ Object {
 exports[`setField logs a field to write if field exists 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "setField",
   "field": "name",
   "meta": Object {},

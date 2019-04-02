@@ -3,7 +3,6 @@
 exports[`createEntry returns a changelog entry object 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "setField",
   "field": "license",
   "meta": Object {},
@@ -14,7 +13,6 @@ exports[`get returns the changelog as an array of entry objects 1`] = `
 Array [
   Object {
     "alreadyExisted": false,
-    "changeWritten": false,
     "event": "setField",
     "field": "name",
     "meta": Object {},
@@ -22,7 +20,6 @@ Array [
   },
   Object {
     "alreadyExisted": false,
-    "changeWritten": false,
     "event": "requireDependency",
     "field": "dependencies",
     "meta": Object {
@@ -43,7 +40,6 @@ Array [
 exports[`getLastEntry returns object for last entry in the changelog 1`] = `
 Object {
   "alreadyExisted": false,
-  "changeWritten": false,
   "event": "requireDependency",
   "field": "dependencies",
   "meta": Object {
