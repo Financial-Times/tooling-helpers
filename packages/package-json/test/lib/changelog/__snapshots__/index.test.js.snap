@@ -1,0 +1,56 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createEntry returns a changelog entry object 1`] = `
+Object {
+  "alreadyExisted": false,
+  "changeWritten": false,
+  "event": "setField",
+  "field": "license",
+  "meta": Object {},
+}
+`;
+
+exports[`get returns the changelog as an array of entry objects 1`] = `
+Array [
+  Object {
+    "alreadyExisted": false,
+    "changeWritten": false,
+    "event": "setField",
+    "field": "name",
+    "meta": Object {},
+    "previousValue": "previous-name",
+  },
+  Object {
+    "alreadyExisted": false,
+    "changeWritten": false,
+    "event": "requireDependency",
+    "field": "dependencies",
+    "meta": Object {
+      "pkg": "express",
+      "version": "4.16.4",
+    },
+  },
+]
+`;
+
+exports[`getAsMessages returns the changelog as an array of messages 1`] = `
+Array [
+  "Set value for field 'name' (overwrote existing value)",
+  "Required package express@4.16.4 in dependencies (new dependency)",
+]
+`;
+
+exports[`getLastEntry returns object for last entry in the changelog 1`] = `
+Object {
+  "alreadyExisted": false,
+  "changeWritten": false,
+  "event": "requireDependency",
+  "field": "dependencies",
+  "meta": Object {
+    "pkg": "express",
+    "version": "4.16.4",
+  },
+}
+`;
+
+exports[`getLastEntryAsMessage returns last entry in the changelog as a message 1`] = `"Required package express@4.16.4 in dependencies (new dependency)"`;

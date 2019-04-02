@@ -1,4 +1,4 @@
-const createChangelog = require('../../src/lib/changelog');
+const createChangelog = require('../../../src/lib/changelog');
 
 let changelog;
 
@@ -7,15 +7,18 @@ beforeEach(() => {
 });
 
 describe('createChangelog', () => {
+
     test('returns object with methods for manipulating changelog', () => {
         expect(changelog).toEqual(expect.any(Object));
         Object.values(changelog).forEach((method) => {
             expect(method).toEqual(expect.any(Function));
         });
     });
+
 });
 
 describe('createEntry', () => {
+
     test('returns a changelog entry object', () => {
         const changelogEntry = changelog.createEntry({
             event: 'setField',
@@ -24,9 +27,11 @@ describe('createEntry', () => {
         expect(changelogEntry).toEqual(expect.any(Object));
         expect(changelogEntry).toMatchSnapshot();
     });
+
 });
 
 describe('get', () => {
+
     test('returns the changelog as an array of entry objects', () => {
         changelog.createEntry({
             event: 'setField',
@@ -44,9 +49,11 @@ describe('get', () => {
         expect(changelogEntries[0]).toEqual(expect.any(Object));
         expect(changelogEntries).toMatchSnapshot();
     });
+
 });
 
 describe('getAsMessages', () => {
+
     test('returns the changelog as an array of messages', () => {
         changelog.createEntry({
             event: 'setField',
@@ -64,9 +71,11 @@ describe('getAsMessages', () => {
         expect(changelogEntries[0]).toEqual(expect.any(String));
         expect(changelogEntries).toMatchSnapshot();
     });
+
 });
 
 describe('getLastEntry', () => {
+
     test('returns object for last entry in the changelog', () => {
         changelog.createEntry({
             event: 'setField',
@@ -84,9 +93,11 @@ describe('getLastEntry', () => {
         expect(lastChangelogEntry).toMatchSnapshot();
         expect(lastChangelogEntry).toEqual(changelog.get().pop());
     });
+
 });
 
 describe('getLastEntryAsMessage', () => {
+
     test('returns last entry in the changelog as a message', () => {
         changelog.createEntry({
             event: 'setField',
@@ -104,4 +115,5 @@ describe('getLastEntryAsMessage', () => {
         expect(lastChangelogEntry).toMatchSnapshot();
         expect(lastChangelogEntry).toEqual(changelog.getAsMessages().pop());
     });
+
 });

@@ -1,48 +1,12 @@
-const { deepCloneObject } = require("./helpers");
+const { deepCloneObject } = require("../helpers");
+const messageFormatters = require('./message-formatters');
 
-/**
- * Functions for creating human-friendly messages from changelog objects.
- */
-// TODO: Write tests for these
-const messageFormatters = {
-  setField: ({ field, previousValue }) => {
-    let message = `Set value for field '${field}'`;
-    message += previousValue
-      ? ` (overwrote existing value)`
-      : " (new field)";
-    return message;
-  },
-  requireDependency: ({ field, previousVersionRange, meta }) => {
-    let message = `Required package ${meta.pkg}@${meta.version} in ${field}`;
-    message += previousVersionRange
-      ? `, previously ${previousVersionRange}`
-      : " (new dependency)";
-    return message;
-  },
-  removeDependency: ({ field, meta }) => {
-    let message = `Removed package ${meta.pkg} from ${field}`;
-    return message;
-  },
-  requireScript: ({ alreadyExisted, meta }) => {
-    let message = `Required script for lifecycle event '${meta.lifecycleEvent}'`;
-    message += alreadyExisted
-      ? ` (overwrote existing command)`
-      : " (new script)";
-    return message;
-  }
-};
-
-const eventTypes = Object.keys(messageFormatters);
-
-/**
- * Format a changelog entry as a human-friendly message.
- *
- * @returns {string}
- */
-// TODO: Write tests
-function formatEntryAsMessage(entry) {
-  return messageFormatters[entry.event](entry);
-}
+const changeEvents = [
+  'setField',
+  'requireDependency',
+  'removeDependency',
+  'requireScript'
+];
 
 module.exports = function createChangelog() {
 
@@ -65,11 +29,11 @@ module.exports = function createChangelog() {
     previousValue = undefined,
     ...meta
   }) {
-    if (!eventTypes.includes(event)) {
-      throw new Error(`changelog#createEntry: Entry has invalid \`event\` type: ${event}`);
+    if (!changeEvents.includes(event)) {
+      throw new Error(`changelog#createEntry: Entry has invalid \`event\` value: ${event}`);
     }
     if (!field) {
-      throw new Error('changelog#createEntry: Entry is missing a `field` option');
+      throw new Error('changelog#createEntry: Entry is missing the `field` property');
     }
 
     const entry = {
@@ -102,7 +66,7 @@ module.exports = function createChangelog() {
    * @returns {Array<string>}
    */
   function getAsMessages() {
-    return changelog.map(entry => formatEntryAsMessage(entry));
+    return changelog.map(entry => messageFormatters.handler(entry));
   }
 
   /**
@@ -123,7 +87,7 @@ module.exports = function createChangelog() {
    * @returns {string}
    */
   function getLastEntryAsMessage() {
-    return formatEntryAsMessage(getLastEntry());
+    return messageFormatters.handler(getLastEntry());
   }
 
   return {

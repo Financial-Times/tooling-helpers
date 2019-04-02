@@ -9,6 +9,7 @@ beforeEach(() => {
 });
 
 describe("loadPackageJson", () => {
+
   test("throws an error if the filepath option is missing", () => {
     expect(() => {
       loadPackageJson();
@@ -32,9 +33,11 @@ describe("loadPackageJson", () => {
     expect(packageJson.getDocument().name).toEqual('ebi');
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
+
 });
 
 describe("getField", () => {
+
   test("returns field contents if field exists", () => {
     expect(packageJson.getField("name")).toEqual("ebi");
   });
@@ -42,9 +45,11 @@ describe("getField", () => {
   test("returns undefined if field does not exist", () => {
     expect(packageJson.getField("private")).toEqual(undefined);
   });
+
 });
 
 describe("setField", () => {
+
   test("logs a field to write if field exists", () => {
     const changelogEntry = packageJson.setField("name", "ebi v2");
     expect(changelogEntry).toMatchSnapshot();
@@ -57,9 +62,11 @@ describe("setField", () => {
     expect(changelogEntry.previousValue).toEqual(undefined);
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
+
 });
 
 describe("requireDependency", () => {
+
   test("throws error if dependencyField does not exist", () => {
     expect(() => {
       packageJson.requireDependency({
@@ -91,9 +98,11 @@ describe("requireDependency", () => {
     expect(changelogEntry.alreadyExisted).toEqual(false);
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
+
 });
 
 describe("removeDependency", () => {
+
   test("throws error if dependencyField does not exist", () => {
     expect(() => {
       packageJson.removeDependency({
@@ -125,9 +134,11 @@ describe("removeDependency", () => {
 
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
+
 });
 
 describe("requireScript", () => {
+
   test("creates new script if absent", () => {
     const changelogEntry = packageJson.requireScript({
       lifecycleEvent: "unit-test",
@@ -164,9 +175,11 @@ describe("requireScript", () => {
     expect(changelogEntry.meta.lifecycleEvent).toEqual("test");
     expect(packageJson.getDocument()).toMatchSnapshot();
   });
+
 });
 
 describe("hasChangesToWrite", () => {
+
   test("returns true when there are pending changes to write to package.json", () =>{
     packageJson.removeDependency({
       pkg: "prettier",
@@ -177,6 +190,7 @@ describe("hasChangesToWrite", () => {
   test("returns false when there are no pending changes to write to package.json", () =>{
     expect(packageJson.hasChangesToWrite()).toEqual(false);
   });
+
 });
 
 // TODO:
