@@ -1,358 +1,273 @@
 const fs = require("fs");
+const path = require("path");
 
-const compatibleFields = [
-  "dependencies",
-  "devDependencies",
-  "optionalDependencies",
-  "peerDependencies",
-  "scripts"
+const createChangelog = require("./lib/changelog");
+const { deepCloneObject, formatObjectAsJson } = require("./lib/helpers");
+
+const dependencyFields = [
+	"dependencies",
+	"devDependencies",
+	"optionalDependencies",
+	"peerDependencies"
 ];
 
 /**
- * Deep clone a JavaScript object.
+ * Load a `package.json` file in to memory so that it can be manipulated.
  *
- * @param {object} object
- */
-function deepCloneObject(object) {
-  return JSON.parse(JSON.stringify(object));
-}
-
-/**
- * Convert a JavaScript object to a formatted JSON string.
+ * After reading the specified `package.json` file, the `loadPackageJson`
+ * method returns a collection of methods that can be used for changing
+ * the `package.json` object and writing those changes back to disk.
  *
- * @param {object} object
- * @returns {string}
+ * _Note on `package` vs `pkg`:_
+ *
+ * [ECMAScript 2](https://www.ecma-international.org/publications/files/ECMA-ST-ARCH/ECMA-262,%202nd%20edition,%20August%201998.pdf)
+ * added `package` as a reserved word for future use so it is not allowed as a
+ * variable or property name in JavaScript. This is why you will see methods in
+ * this module that require `pkg` as an option, rather than `package`.
+ *
+ * @namespace {function} loadPackageJson
+ * @param {object} options
+ * @param {string} options.filepath - Filepath to a `package.json` file
  */
-function formatObjectAsJson(object) {
-  const formattedContents =
-    JSON.stringify(object, null, 2) + "\n";
+module.exports = function loadPackageJson(options = {}) {
+	if (!options.filepath) {
+		throw new Error(
+			"package-json#constructor: `filepath` option must be specified"
+		);
+	}
 
-  return formattedContents;
-}
+	options.filepath = path.resolve(options.filepath);
 
-/**
- * Functions for creating human-friendly messages from changelog objects.
- */
-const createChangelogMessage = {
-  setField: ({ field, previousValue }) => {
-    let message = `Set value for field '${field}'`;
-    message += previousValue
-      ? ` (overwrote existing value)`
-      : " (new field)";
-    return message;
-  },
-  requireDependency: ({ pkg, field, version, previousVersionRange }) => {
-    let message = `Required package ${pkg}@${version} in ${field}`;
-    message += previousVersionRange
-      ? `, previously ${previousVersionRange}`
-      : " (new dependency)";
-    return message;
-  },
-  removeDependency: ({ pkg, field }) => {
-    let message = `Removed package ${pkg} from ${field}`;
-    return message;
-  },
-  requireScript: ({ lifecycleEvent, alreadyExisted }) => {
-    let message = `Required script for lifecycle event '${lifecycleEvent}'`;
-    message += alreadyExisted
-      ? ` (overwrote existing command)`
-      : " (new script)";
-    return message;
-  },
-  fallback: (entry) => {
-    return JSON.stringify(entry);
-  }
+	let originalContents;
+	try {
+		originalContents = JSON.parse(
+			fs.readFileSync(options.filepath, { encoding: "utf-8" })
+		);
+	} catch (err) {
+		throw new Error(
+			`package-json#loadPackageJson: Unable to read and parse file: ${
+				options.filepath
+			}\n\n${err.message}`
+		);
+	}
+
+	let previousContents = deepCloneObject(originalContents);
+	const workingContents = deepCloneObject(originalContents);
+
+	const changelog = createChangelog();
+
+	return {
+		/**
+		 * @memberof loadPackageJson
+		 * @function getChangelog
+		 */
+		getChangelog: changelog.get,
+		get,
+		hasChangesToWrite,
+		writeChanges,
+		getField,
+		setField,
+		requireDependency,
+		removeDependency,
+		requireScript
+	};
+
+	/**
+	 * Get an object representing the current working state of the
+	 * `package.json` object. This may be different to what exists
+	 * on the file system if changes have not yet been written by
+	 * calling the `writeChanges` method.
+	 *
+	 * @memberof loadPackageJson
+	 * @returns {object}
+	 */
+	function get() {
+		return deepCloneObject(workingContents);
+	}
+
+	/**
+	 * Check if there are file changes to write.
+	 *
+	 * @memberof loadPackageJson
+	 * @returns {boolean}
+	 */
+	function hasChangesToWrite() {
+		const formattedPreviousContents = formatObjectAsJson(previousContents);
+		const formattedWorkingContents = formatObjectAsJson(workingContents);
+
+		return formattedPreviousContents !== formattedWorkingContents;
+	}
+
+	/**
+	 * Write to the `package.json` file.
+	 *
+	 * @memberof loadPackageJson
+	 * @returns {boolean}
+	 */
+	function writeChanges() {
+		try {
+			fs.writeFileSync(
+				options.filepath,
+				formatObjectAsJson(workingContents) + "\n"
+			);
+		} catch (err) {
+			throw new Error(
+				`package-json#writeChanges: Error writing changes to file '${
+					options.filepath
+				}'\n\n${err.message}`
+			);
+		}
+
+		previousContents = deepCloneObject(workingContents);
+
+		return true;
+	}
+
+	/**
+	 * Get a specific field from the `package.json` object.
+	 *
+	 * @memberof loadPackageJson
+	 * @param {string} field
+	 * @returns {*}
+	 */
+	function getField(field) {
+		return workingContents[field];
+	}
+
+	/**
+	 * Set the value for a specific field in the `package.json` object.
+	 *
+	 * @memberof loadPackageJson
+	 * @param {string} field
+	 * @param {*} value
+	 * @returns {object} - changelog entry
+	 */
+	function setField(field, value) {
+		const changes = { event: "setField", field };
+
+		const fieldAlreadyExists = typeof workingContents[field] !== "undefined";
+		changes.alreadyExisted = fieldAlreadyExists;
+		if (fieldAlreadyExists) {
+			changes.previousValue = workingContents[field];
+		}
+
+		workingContents[field] = value;
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Require a package to exist as a dependency in `package.json`.
+	 *
+	 * @memberof loadPackageJson
+	 * @param {object} options
+	 * @param {string} options.pkg - Package name. Note: This option is named `pkg` as `package` is a reserved word in JavaScript.
+	 * @param {string} options.version
+	 * @param {string} options.field
+	 * @returns {object} - changelog entry
+	 */
+	function requireDependency({ pkg, version, field }) {
+		if (!dependencyFields.includes(field)) {
+			throw new Error(
+				`package-json#requireDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+					", "
+				)}`
+			);
+		}
+
+		if (!workingContents[field]) {
+			workingContents[field] = {};
+		}
+
+		const dependencies = workingContents[field];
+
+		const changes = { event: "requireDependency", field, pkg, version };
+
+		const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
+		changes.alreadyExisted = dependencyAlreadyExists;
+		if (dependencyAlreadyExists) {
+			changes.previousValue = dependencies[pkg];
+		}
+
+		dependencies[pkg] = version;
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Remove a package as a dependency from `package.json`.
+	 *
+	 * @memberof loadPackageJson
+	 * @param {object} options
+	 * @param {string} options.pkg - Package name. Note: This option is named `pkg` as `package` is a reserved word in JavaScript.
+	 * @param {string} options.field
+	 * @returns {object|boolean} - changelog entry or `false` if dependency doesn't exist
+	 */
+	function removeDependency({ pkg, field }) {
+		if (!dependencyFields.includes(field)) {
+			throw new Error(
+				`package-json#removeDependency: Invalid field specified '${field}'. Valid fields: ${dependencyFields.join(
+					", "
+				)}`
+			);
+		}
+
+		if (!workingContents[field]) {
+			return false;
+		}
+
+		const dependencies = workingContents[field];
+
+		const changes = {
+			event: "removeDependency",
+			field,
+			alreadyExisted: true,
+			pkg
+		};
+
+		if (typeof dependencies[pkg] !== "undefined") {
+			changes.previousValue = dependencies[pkg];
+			delete dependencies[pkg];
+		} else {
+			return false;
+		}
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Require a script to exist in the `scripts` field of `package.json`.
+	 *
+	 * @see https://docs.npmjs.com/misc/scripts
+	 *
+	 * @memberof loadPackageJson
+	 * @param {object} options
+	 * @param {string} options.stage - e.g. start, test, build, deploy
+	 * @param {string} options.command
+	 * @returns {object} - changelog entry
+	 */
+	function requireScript({ stage, command }) {
+		const changes = {
+			event: "requireScript",
+			field: "scripts",
+			stage
+		};
+
+		const scriptsFieldExists = typeof workingContents.scripts !== "undefined";
+
+		if (!scriptsFieldExists) {
+			workingContents.scripts = {};
+		}
+
+		const scripts = workingContents.scripts;
+
+		const stageAlreadyExists =
+			typeof scripts[stage] !== "undefined";
+
+		changes.alreadyExisted = stageAlreadyExists;
+
+		scripts[stage] = command;
+
+		return changelog.createEntry(changes);
+	}
 };
-
-/**
- * Class for reading and manipulating the contents of a `package.json`
- */
-class PackageJson {
-  /**
-   * Create an instance of the `PackageJson` class.
-   * Reads the `package.json` file into memory.
-   *
-   * @param {object} options
-   * @param {string} options.filepath - Filepath to a `package.json` file
-   * @param {boolean} options.writeImmediately - When a change is made automatically write it to the `package.json` file (default: false)
-   */
-  constructor(options) {
-    if (!options.filepath) {
-      throw new Error(
-        "PackageJson#constructor: `filepath` option must be specified"
-      );
-    }
-
-    const defaults = {
-      writeImmediately: false
-    };
-
-    this.options = { ...defaults, ...options };
-
-    this.changelog = [];
-
-    this.originalContents = require(this.options.filepath);
-    this.previousContents = deepCloneObject(this.originalContents);
-    this.workingContents = deepCloneObject(this.originalContents);
-  }
-
-  /**
-   * Get a specific field from the `package.json` object.
-   *
-   * @param {string} field
-   * @returns {*}
-   */
-  getField(field) {
-    return this.workingContents[field];
-  }
-
-  /**
-   * Set the value for a specific field in the `package.json` object.
-   *
-   * @param {string} field
-   * @param {*} value
-   *
-   * @returns {object} - changelog entry
-   */
-  setField(field, value) {
-    const changelogEntry = {
-      event: "setField",
-      field,
-      previousValue: false,
-      written: false
-    };
-
-    const fieldAlreadyExists =
-      typeof this.workingContents[field] !== "undefined";
-
-    if (fieldAlreadyExists) {
-      changelogEntry.previousValue = this.workingContents[field];
-    }
-
-    this.workingContents[field] = value;
-
-    if (this.options.writeImmediately === true) {
-      this.write();
-      changelogEntry.written = true;
-    }
-
-    this.changelog.push(changelogEntry);
-
-    return changelogEntry;
-  }
-
-  /**
-   * Write to the `package.json` file.
-   *
-   * @returns boolean
-   */
-  write() {
-    fs.writeFileSync(this.options.filepath, formatObjectAsJson(this.workingContents));
-
-    for (let entry of this.changelog) {
-      entry.written = true;
-    }
-
-    this.previousContents = deepCloneObject(this.workingContents);
-
-    return true;
-  }
-
-  /**
-   * Check if there are file changes to write.
-   *
-   * @returns boolean
-   */
-  hasChangesToWrite() {
-    const formattedPreviousContents = formatObjectAsJson(this.previousContents);
-    const formattedWorkingContents = formatObjectAsJson(this.workingContents);
-
-    return (formattedPreviousContents !== formattedWorkingContents);
-  }
-
-  /**
-   * Require a package to exist as a dependency in `package.json`.
-   *
-   * @param {object} options
-   * @param {string} options.pkg - Package name
-   * @param {string} options.version
-   * @param {string} options.field
-   *
-   * @returns {object} - changelog entry
-   */
-  requireDependency({ pkg, version, field }) {
-    if (!compatibleFields.includes(field)) {
-      throw new Error(
-        `PackageJson#addDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
-          ", "
-        )}`
-      );
-    }
-
-    const dependencies = this.workingContents[field];
-
-    const changelogEntry = {
-      event: "requireDependency",
-      pkg,
-      field,
-      version,
-      previousVersionRange: false,
-      written: false
-    };
-
-    const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
-    if (dependencyAlreadyExists) {
-      changelogEntry.previousVersionRange = dependencies[pkg];
-    }
-
-    dependencies[pkg] = version;
-
-    if (this.options.writeImmediately === true) {
-      this.write();
-      changelogEntry.written = true;
-    }
-
-    this.changelog.push(changelogEntry);
-
-    return changelogEntry;
-  }
-
-  /**
-   * Remove a package as a dependency from `package.json`.
-   *
-   * @param {object} options
-   * @param {string} options.pkg
-   * @param {string} options.field
-   *
-   * @returns {object} - changelog entry
-   */
-  removeDependency({ pkg, field }) {
-    if (!compatibleFields.includes(field)) {
-      throw new Error(
-        `PackageJson#removeDependency: Invalid field specified '${field}'. Valid fields: ${compatibleFields.join(
-          ", "
-        )}`
-      );
-    }
-
-    const dependencies = this.workingContents[field];
-
-    const changelogEntry = {
-      event: "removeDependency",
-      pkg,
-      field,
-      version: null,
-      written: false
-    };
-
-    if (typeof dependencies[pkg] !== "undefined") {
-      changelogEntry.version = dependencies[pkg];
-      delete dependencies[pkg];
-    } else {
-      // TODO: What should we do if the dependency doesn't exist?
-    }
-
-    if (this.options.writeImmediately === true) {
-      this.write();
-      changelogEntry.written = true;
-    }
-
-    this.changelog.push(changelogEntry);
-
-    return changelogEntry;
-  }
-
-  /**
-   * Require a script to exist in the `scripts` field of `package.json`.
-   *
-   * @param {object} options
-   * @param {string} options.lifecycleEvent
-   * @param {string} options.command
-   *
-   * @returns {object} - changelog entry
-   */
-  requireScript({ lifecycleEvent, command }) {
-    const changelogEntry = {
-      event: "requireScript",
-      lifecycleEvent,
-      alreadyExisted: false,
-      written: false
-    };
-
-    const scriptsFieldExists =
-      typeof this.workingContents.scripts !== "undefined";
-
-    if (!scriptsFieldExists) {
-      this.workingContents.scripts = {};
-    }
-
-    const scripts = this.workingContents.scripts;
-
-    const lifecycleEventAlreadyExists =
-      typeof scripts[lifecycleEvent] !== "undefined";
-
-    changelogEntry.alreadyExisted = lifecycleEventAlreadyExists;
-
-    scripts[lifecycleEvent] = command;
-
-    if (this.options.writeImmediately === true) {
-      this.write();
-      changelogEntry.written = true;
-    }
-
-    this.changelog.push(changelogEntry);
-
-    return changelogEntry;
-  }
-
-  /**
-   * Get all changelog entry objects.
-   *
-   * @returns {Array<object>}
-   */
-  getChangelog() {
-    return this.changelog;
-  }
-
-  /**
-   * Get all changelog entries as human-friendly messages.
-   *
-   * @returns {Array<string>}
-   */
-  getChangelogAsMessages() {
-    return this.changelog.map(entry => this.getChangelogEntryAsMessage(entry));
-  }
-
-  /**
-   * Format a changelog entry as a human-friendly message.
-   *
-   * @returns {string}
-   */
-  getChangelogEntryAsMessage(entry) {
-    if (!createChangelogMessage[entry.event]) {
-      return createChangelogMessage.fallback(entry);
-    }
-
-    return createChangelogMessage[entry.event](entry);
-  }
-
-  /**
-   * Get last changelog entry object.
-   *
-   * @returns {object}
-   */
-  getLastChangelogEntry() {
-    return this.changelog[this.changelog.length - 1];
-  }
-
-  /**
-   * Get last changelog entry as a human-friendly message.
-   *
-   * @returns {string}
-   */
-  getLastChangelogEntryAsMessage() {
-    return this.getChangelogEntryAsMessage(this.getLastChangelogEntry());
-  }
-}
-
-module.exports = PackageJson;
