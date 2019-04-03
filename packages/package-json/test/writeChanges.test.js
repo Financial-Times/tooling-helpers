@@ -1,5 +1,9 @@
 /**
- * TODO: Explain why this test suite is separate
+ * These tests for the `writeChanges` method are separate from the tests for
+ * the other methods as we're mocking out Node.js' `fs` module using
+ * `memfs`. This is so that we can test writing changes to the file system.
+ * This doesn't play well with the other tests that we want to use the real
+ * `fs` module.
  */
 
 const loadPackageJson = require("../src/index.js");
