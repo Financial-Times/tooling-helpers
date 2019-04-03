@@ -19,26 +19,26 @@ exports.handler = entry => {
  * Methods for creating human-friendly messages from changelog entry objects.
  */
 
-exports.setField = ({ field, previousValue }) => {
+exports.setField = ({ field, previousValue = undefined }) => {
   let message = `Set value for field '${field}'`;
   message += previousValue ? ` (overwrote existing value)` : " (new field)";
   return message;
 };
 
-exports.requireDependency = ({ field, previousVersionRange, meta }) => {
+exports.requireDependency = ({ field, previousValue = undefined, meta = {} }) => {
   let message = `Required package ${meta.pkg}@${meta.version} in ${field}`;
-  message += previousVersionRange
-    ? `, previously ${previousVersionRange}`
+  message += previousValue
+    ? `, previously ${previousValue}`
     : " (new dependency)";
   return message;
 };
 
-exports.removeDependency = ({ field, meta }) => {
+exports.removeDependency = ({ field, meta = {} }) => {
   let message = `Removed package ${meta.pkg} from ${field}`;
   return message;
 };
 
-exports.requireScript = ({ alreadyExisted, meta }) => {
+exports.requireScript = ({ alreadyExisted, meta = {} }) => {
   let message = `Required script for lifecycle event '${meta.lifecycleEvent}'`;
   message += alreadyExisted ? ` (overwrote existing command)` : " (new script)";
   return message;

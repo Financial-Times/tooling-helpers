@@ -4,8 +4,8 @@
 
 const loadPackageJson = require("../src/index.js");
 
-const { fs, vol } = require('memfs');
 process.env.MEMFS_DONT_WARN = true;
+const { fs, vol } = require('memfs');
 
 jest.mock('fs', () => require('memfs').fs);
 const actualFs = jest.requireActual('fs');
