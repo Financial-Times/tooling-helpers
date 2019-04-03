@@ -4,7 +4,7 @@ let packageJson;
 
 beforeEach(() => {
   packageJson = loadPackageJson({
-    filepath: `${__dirname}/fixtures/testPackageJson.json`
+    filepath: `${__dirname}/fixtures/test-package.json`
   });
 });
 
@@ -34,7 +34,7 @@ describe("loadPackageJson", () => {
 
   test("returns object with methods for manipulating package.json", () => {
     const packageJson = loadPackageJson({
-      filepath: `${__dirname}/fixtures/testPackageJson.json`
+      filepath: `${__dirname}/fixtures/test-package.json`
     });
     expect(packageJson).toEqual(expect.any(Object));
     Object.values(packageJson).forEach((method) => {
@@ -44,7 +44,7 @@ describe("loadPackageJson", () => {
 
   test("loads the specified package.json file", () => {
     const packageJson = loadPackageJson({
-      filepath: `${__dirname}/fixtures/testPackageJson.json`
+      filepath: `${__dirname}/fixtures/test-package.json`
     });
     expect(packageJson.getDocument().name).toEqual('ebi');
     expect(packageJson.getDocument()).toMatchSnapshot();
@@ -189,7 +189,7 @@ describe("requireScript", () => {
 
   test("creates new script if no previous scripts", () => {
     const packageJsonWithoutScripts = loadPackageJson({
-      filepath: `${__dirname}/fixtures/testPackageJsonNoScripts.json`
+      filepath: `${__dirname}/fixtures/test-no-scripts-package.json`
     });
     const changelogEntry = packageJsonWithoutScripts.requireScript({
       lifecycleEvent: "test",

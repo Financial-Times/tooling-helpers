@@ -15,7 +15,7 @@ let mockFsWriteFileSync;
 beforeEach(() => {
     mockFsWriteFileSync = jest.spyOn(fs, 'writeFileSync');
 
-    const fixturePackageJson = `${__dirname}/fixtures/testPackageJson.json`;
+    const fixturePackageJson = `${__dirname}/fixtures/test-package.json`;
     vol.fromJSON({
         'package.json': actualFs.readFileSync(fixturePackageJson, { encoding: 'utf-8' })
     });
