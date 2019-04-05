@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`writeChanges throws an error if it is unable to write to the package.json file 1`] = `
+"package-json#writeChanges: Error writing changes to file '/app/package.json'
+
+EACCES: permission denied, open '/app/package.json'"
+`;

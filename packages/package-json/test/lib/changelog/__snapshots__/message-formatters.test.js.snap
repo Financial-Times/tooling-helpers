@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`handler throws an error if there is no message formatter defined for the entry's \`event\` 1`] = `"message-formatters#handler: There is no message formatter defined for the \`event\` 'invalidEvent'"`;
