@@ -221,7 +221,7 @@ const changelogObjects = packageJson.getChangelog();
 ]
 */
 
-const changelogMessages = getChangelog.asMessages();
+const changelogMessages = packageJson.getChangelog.asMessages();
 
 /*
 [
@@ -230,7 +230,7 @@ const changelogMessages = getChangelog.asMessages();
 ]
 */
 
-const lastChangelogEntryObject = getChangelog.lastEntry();
+const lastChangelogEntryObject = packageJson.getChangelog.lastEntry();
 
 /*
 {
@@ -243,7 +243,7 @@ const lastChangelogEntryObject = getChangelog.lastEntry();
 }
 */
 
-const lastChangelogEntryMessage = getChangelog.lastEntryAsMessage();
+const lastChangelogEntryMessage = packageJson.getChangelog.lastEntryAsMessage();
 
 // "Required script for stage 'test' (overwrote existing command)"
 ```
