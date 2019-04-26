@@ -2,7 +2,7 @@
 
 This library allows you to load, manipulate and write the contents of
 a [`package.json`](https://docs.npmjs.com/files/package.json.html) file.
-It also provides a [changelog](#getChangelog) detailing any changes
+It also provides a [changelog](#getchangelog) detailing any changes
 that have been made.
 
 # Usage
@@ -23,16 +23,16 @@ const packageJson = loadPackageJson({ filepath: `filepath/to/package.json` });
 Methods returned:
 
 - [get](#get)
-- [hasChangesToWrite](#hasChangesToWrite)
-- [writeChanges](#writeChanges)
-- [getField](#getField)
-- [setField](#setField)
-- [removeField](#removeField)
-- [requireDependency](#requireDependency)
-- [removeDependency](#removeDependency)
-- [requireScript](#requireScript)
-- [removeScript](#removeScript)
-- [getChangelog](#getChangelog)
+- [hasChangesToWrite](#haschangestowrite)
+- [writeChanges](#writechanges)
+- [getField](#getfield)
+- [setField](#setfield)
+- [removeField](#removefield)
+- [requireDependency](#requiredependency)
+- [removeDependency](#removedependency)
+- [requireScript](#requirescript)
+- [removeScript](#removescript)
+- [getChangelog](#getchangelog)
 
 ### get
 
