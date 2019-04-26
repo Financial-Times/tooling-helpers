@@ -103,6 +103,22 @@ describe("setField", () => {
 	});
 });
 
+describe("removeField", () => {
+	test("removes the field if it exists", () => {
+		const changelogEntry = packageJson.removeField("bugs");
+		expect(changelogEntry).toMatchSnapshot();
+		expect(packageJson.get()).toMatchSnapshot();
+	});
+
+	test("removeField returns boolean false if field does not exist", () => {
+		let newPackageJson = loadPackageJson({
+			filepath: `${__dirname}/fixtures/test-no-scripts-package.json`
+		});
+		const changelogEntry = newPackageJson.removeField("scripts");
+		expect(changelogEntry).toEqual(false);
+	});
+});
+
 describe("requireDependency", () => {
 	test("throws error if dependencyField does not exist", () => {
 		expect(() => {

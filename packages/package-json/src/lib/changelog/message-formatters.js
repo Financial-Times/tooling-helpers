@@ -41,6 +41,20 @@ exports.setField = ({ field, alreadyExisted }) => {
 };
 
 /**
+ * Format a `removeField` changelog entry object as a human-friendly message.
+ *
+ * @memberof messageFormatters
+ * @function removeField
+ * @param {object} options
+ * @param {string} options.field
+ * @returns {string}
+ */
+exports.removeField = ({ field }) => {
+	let message = `Removed field '${field}'`;
+	return message;
+};
+
+/**
  * Format a `requireDependency` changelog entry object as a human-friendly message.
  *
  * @memberof messageFormatters

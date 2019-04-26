@@ -27,6 +27,7 @@ Methods returned:
 - [writeChanges](#writeChanges)
 - [getField](#getField)
 - [setField](#setField)
+- [removeField](#removeField)
 - [requireDependency](#requireDependency)
 - [removeDependency](#removeDependency)
 - [requireScript](#requireScript)
@@ -82,6 +83,26 @@ Returns a changelog entry object:
   "meta": {},
   "previousValue": "oldName",
   "alreadyExisted": false
+}
+```
+
+### removeField
+
+Removes a specific field in the `package.json` object and returns a changelog entry.
+
+```javascript
+packageJson.removeField("license");
+```
+
+Returns a changelog entry object:
+
+```json
+{
+  "event": "removeField",
+  "field": "license",
+  "meta": {},
+  "previousValue": "MIT",
+  "alreadyExisted": true
 }
 ```
 

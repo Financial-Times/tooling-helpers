@@ -67,6 +67,7 @@ module.exports = function loadPackageJson(options = {}) {
 		writeChanges,
 		getField,
 		setField,
+		removeField,
 		requireDependency,
 		removeDependency,
 		requireScript
@@ -152,6 +153,32 @@ module.exports = function loadPackageJson(options = {}) {
 		}
 
 		workingContents[field] = value;
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Removes a specific field from the `package.json` object.
+	 *
+	 * @param {string} field
+	 * @returns {object} - changelog entry
+	 */
+	function removeField(field) {
+		const changes = {
+			event: "removeField",
+			field
+		};
+
+		const fieldExists = typeof workingContents[field] !== "undefined";
+
+		if (fieldExists) {
+			changes.previousValue = workingContents[field];
+			changes.alreadyExisted = true;
+		} else {
+			return false;
+		}
+
+		delete workingContents[field];
 
 		return changelog.createEntry(changes);
 	}

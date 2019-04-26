@@ -54,6 +54,16 @@ describe("setField", () => {
 	});
 });
 
+describe("removeField", () => {
+	test("returns a correctly formatted message", () => {
+		expect(
+			messageFormatters.removeField({
+				field: "bugs"
+			})
+		).toEqual("Removed field 'bugs'");
+	});
+});
+
 describe("requireDependency", () => {
 	test("returns a correctly formatted message", () => {
 		expect(
