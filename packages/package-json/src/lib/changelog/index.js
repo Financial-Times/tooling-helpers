@@ -3,9 +3,11 @@ const messageFormatters = require("./message-formatters");
 
 const changeEvents = [
 	"setField",
+	"removeField",
 	"requireDependency",
 	"removeDependency",
-	"requireScript"
+	"requireScript",
+	"removeScript"
 ];
 
 module.exports = function createChangelog() {

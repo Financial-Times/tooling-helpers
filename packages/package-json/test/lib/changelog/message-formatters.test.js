@@ -54,6 +54,16 @@ describe("setField", () => {
 	});
 });
 
+describe("removeField", () => {
+	test("returns a correctly formatted message", () => {
+		expect(
+			messageFormatters.removeField({
+				field: "bugs"
+			})
+		).toEqual("Removed field 'bugs'");
+	});
+});
+
 describe("requireDependency", () => {
 	test("returns a correctly formatted message", () => {
 		expect(
@@ -114,8 +124,18 @@ describe("requireScript", () => {
 					stage: "start"
 				}
 			})
-		).toEqual(
-			"Required script for stage 'start' (overwrote existing command)"
-		);
+		).toEqual("Required script for stage 'start' (overwrote existing command)");
+	});
+});
+
+describe("removeScript", () => {
+	test("returns a correctly formatted message", () => {
+		expect(
+			messageFormatters.removeScript({
+				meta: {
+					stage: "test"
+				}
+			})
+		).toEqual("Removed script for stage 'test'");
 	});
 });

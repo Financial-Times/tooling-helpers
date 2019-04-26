@@ -27,9 +27,11 @@ Methods returned:
 - [writeChanges](#writeChanges)
 - [getField](#getField)
 - [setField](#setField)
+- [removeField](#removeField)
 - [requireDependency](#requireDependency)
 - [removeDependency](#removeDependency)
 - [requireScript](#requireScript)
+- [removeScript](#removeScript)
 - [getChangelog](#getChangelog)
 
 ### get
@@ -47,7 +49,6 @@ Checks if there are file changes to write.
 ```javascript
 packageJson.hasChangesToWrite(); // true or false
 ```
-
 
 ### writeChanges
 
@@ -82,6 +83,26 @@ Returns a changelog entry object:
   "meta": {},
   "previousValue": "oldName",
   "alreadyExisted": false
+}
+```
+
+### removeField
+
+Removes a specific field in the `package.json` object and returns a changelog entry.
+
+```javascript
+packageJson.removeField("license");
+```
+
+Returns a changelog entry object:
+
+```json
+{
+  "event": "removeField",
+  "field": "license",
+  "meta": {},
+  "previousValue": "MIT",
+  "alreadyExisted": true
 }
 ```
 
@@ -157,6 +178,29 @@ Returns a changelog entry object:
   "field": "scripts",
   "meta": {
     "stage": "test"
+  },
+  "alreadyExisted": true
+}
+```
+
+### removeScript
+
+Requires a script to exist in the `scripts` field of `package.json`.
+
+```javascript
+packageJson.removeScript({
+  stage: "lint"
+});
+```
+
+Returns a changelog entry object:
+
+```json
+{
+  "event": "removeScript",
+  "field": "scripts",
+  "meta": {
+    "stage": "lint"
   },
   "alreadyExisted": true
 }

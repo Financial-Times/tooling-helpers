@@ -41,6 +41,20 @@ exports.setField = ({ field, alreadyExisted }) => {
 };
 
 /**
+ * Format a `removeField` changelog entry object as a human-friendly message.
+ *
+ * @memberof messageFormatters
+ * @function removeField
+ * @param {object} options
+ * @param {string} options.field
+ * @returns {string}
+ */
+exports.removeField = ({ field }) => {
+	let message = `Removed field '${field}'`;
+	return message;
+};
+
+/**
  * Format a `requireDependency` changelog entry object as a human-friendly message.
  *
  * @memberof messageFormatters
@@ -53,6 +67,7 @@ exports.setField = ({ field, alreadyExisted }) => {
  * @param {string} options.meta.version
  * @returns {string}
  */
+
 exports.requireDependency = ({ field, previousValue = undefined, meta }) => {
 	let message = `Required package ${meta.pkg}@${meta.version} in ${field}`;
 	message += previousValue
@@ -91,5 +106,20 @@ exports.removeDependency = ({ field, meta }) => {
 exports.requireScript = ({ alreadyExisted, meta }) => {
 	let message = `Required script for stage '${meta.stage}'`;
 	message += alreadyExisted ? ` (overwrote existing command)` : " (new script)";
+	return message;
+};
+
+/**
+ * Format a `removeScript` changelog entry object as a human-friendly message.
+ *
+ * @memberof messageFormatters
+ * @function removeScript
+ * @param {object} options
+ * @param {object} options.meta
+ * @param {string} options.meta.stage
+ * @returns {string}
+ */
+exports.removeScript = ({ meta }) => {
+	let message = `Removed script for stage '${meta.stage}'`;
 	return message;
 };

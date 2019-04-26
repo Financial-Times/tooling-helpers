@@ -67,9 +67,11 @@ module.exports = function loadPackageJson(options = {}) {
 		writeChanges,
 		getField,
 		setField,
+		removeField,
 		requireDependency,
 		removeDependency,
-		requireScript
+		requireScript,
+		removeScript
 	};
 
 	/**
@@ -157,6 +159,32 @@ module.exports = function loadPackageJson(options = {}) {
 	}
 
 	/**
+	 * Removes a specific field from the `package.json` object.
+	 *
+	 * @param {string} field
+	 * @returns {object} - changelog entry
+	 */
+	function removeField(field) {
+		const changes = {
+			event: "removeField",
+			field
+		};
+
+		const fieldExists = typeof workingContents[field] !== "undefined";
+
+		if (fieldExists) {
+			changes.previousValue = workingContents[field];
+			changes.alreadyExisted = true;
+		} else {
+			return false;
+		}
+
+		delete workingContents[field];
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
 	 * Require a package to exist as a dependency in `package.json`.
 	 *
 	 * @memberof loadPackageJson
@@ -184,9 +212,9 @@ module.exports = function loadPackageJson(options = {}) {
 		const changes = { event: "requireDependency", field, pkg, version };
 
 		const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
-		changes.alreadyExisted = dependencyAlreadyExists;
 		if (dependencyAlreadyExists) {
 			changes.previousValue = dependencies[pkg];
+			changes.alreadyExisted = true;
 		}
 
 		dependencies[pkg] = version;
@@ -261,12 +289,42 @@ module.exports = function loadPackageJson(options = {}) {
 
 		const scripts = workingContents.scripts;
 
-		const stageAlreadyExists =
-			typeof scripts[stage] !== "undefined";
+		const stageAlreadyExists = typeof scripts[stage] !== "undefined";
 
 		changes.alreadyExisted = stageAlreadyExists;
 
 		scripts[stage] = command;
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Remove a script from the `scripts` field of `package.json`.
+	 *
+	 * @see https://docs.npmjs.com/misc/scripts
+	 *
+	 * @param {object} options
+	 * @param {string} options.stage - e.g. start, test, build, deploy
+	 * @returns {object} - changelog entry
+	 */
+	function removeScript(stage) {
+		const changes = {
+			event: "removeScript",
+			field: "scripts",
+			stage
+		};
+
+		const scripts = workingContents.scripts;
+		const scriptsFieldExists = typeof scripts !== "undefined";
+		const stageExists =
+			scriptsFieldExists && typeof scripts[stage] !== "undefined";
+
+		if (!stageExists) {
+			return false;
+		}
+
+		delete scripts[stage];
+		changes.alreadyExisted = true;
 
 		return changelog.createEntry(changes);
 	}
