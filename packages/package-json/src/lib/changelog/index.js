@@ -6,7 +6,8 @@ const changeEvents = [
 	"removeField",
 	"requireDependency",
 	"removeDependency",
-	"requireScript"
+	"requireScript",
+	"removeScript"
 ];
 
 module.exports = function createChangelog() {

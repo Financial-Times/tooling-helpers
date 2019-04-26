@@ -129,3 +129,15 @@ describe("requireScript", () => {
 		);
 	});
 });
+
+describe("removeScript", () => {
+	test("returns a correctly formatted message", () => {
+		expect(
+			messageFormatters.removeScript({
+				meta: {
+					stage: "test"
+				}
+			})
+		).toEqual("Removed script for stage 'test'");
+	});
+});

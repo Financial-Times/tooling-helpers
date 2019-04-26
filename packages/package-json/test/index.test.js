@@ -246,3 +246,30 @@ describe("requireScript", () => {
 		expect(packageJson.get()).toMatchSnapshot();
 	});
 });
+
+describe("removeScript", () => {
+	test("returns boolean false if `scripts` does not exist", () => {
+		const packageJsonWithoutScripts = loadPackageJson({
+			filepath: `${__dirname}/fixtures/test-no-scripts-package.json`
+		});
+		const changelogEntry = packageJsonWithoutScripts.removeScript({
+			stage: "deploy"
+		});
+		expect(changelogEntry).toEqual(false);
+	});
+
+	test("returns boolean false if `stage` does not exist", () => {
+		const changelogEntry = packageJson.removeScript({
+			stage: "deploy"
+		});
+		expect(changelogEntry).toEqual(false);
+	});
+
+	test("removes existing script if present", () => {
+		const changelogEntry = packageJson.removeScript("test");
+		expect(changelogEntry).toMatchSnapshot();
+		expect(changelogEntry.alreadyExisted).toEqual(true);
+		expect(changelogEntry.meta.stage).toEqual("test");
+		expect(packageJson.get()).toMatchSnapshot();
+	});
+});

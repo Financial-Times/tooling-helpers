@@ -70,7 +70,8 @@ module.exports = function loadPackageJson(options = {}) {
 		removeField,
 		requireDependency,
 		removeDependency,
-		requireScript
+		requireScript,
+		removeScript
 	};
 
 	/**
@@ -294,6 +295,37 @@ module.exports = function loadPackageJson(options = {}) {
 		changes.alreadyExisted = stageAlreadyExists;
 
 		scripts[stage] = command;
+
+		return changelog.createEntry(changes);
+	}
+
+	/**
+	 * Remove a script from the `scripts` field of `package.json`.
+	 *
+	 * @see https://docs.npmjs.com/misc/scripts
+	 *
+	 * @param {object} options
+	 * @param {string} options.stage - e.g. start, test, build, deploy
+	 * @returns {object} - changelog entry
+	 */
+	function removeScript(stage) {
+		const changes = {
+			event: "removeScript",
+			field: "scripts",
+			stage
+		};
+
+		const scripts = workingContents.scripts;
+		const scriptsFieldExists = typeof scripts !== "undefined";
+		const stageExists =
+			scriptsFieldExists && typeof scripts[stage] !== "undefined";
+
+		if (!stageExists) {
+			return false;
+		}
+
+		delete scripts[stage];
+		changes.alreadyExisted = true;
 
 		return changelog.createEntry(changes);
 	}

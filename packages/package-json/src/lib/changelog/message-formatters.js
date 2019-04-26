@@ -107,3 +107,18 @@ exports.requireScript = ({ alreadyExisted, meta }) => {
 	message += alreadyExisted ? ` (overwrote existing command)` : " (new script)";
 	return message;
 };
+
+/**
+ * Format a `removeScript` changelog entry object as a human-friendly message.
+ *
+ * @memberof messageFormatters
+ * @function removeScript
+ * @param {object} options
+ * @param {object} options.meta
+ * @param {string} options.meta.stage
+ * @returns {string}
+ */
+exports.removeScript = ({ meta }) => {
+	let message = `Removed script for stage '${meta.stage}'`;
+	return message;
+};

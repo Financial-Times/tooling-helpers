@@ -31,6 +31,7 @@ Methods returned:
 - [requireDependency](#requireDependency)
 - [removeDependency](#removeDependency)
 - [requireScript](#requireScript)
+- [removeScript](#removeScript)
 - [getChangelog](#getChangelog)
 
 ### get
@@ -178,6 +179,29 @@ Returns a changelog entry object:
   "field": "scripts",
   "meta": {
     "stage": "test"
+  },
+  "alreadyExisted": true
+}
+```
+
+### removeScript
+
+Requires a script to exist in the `scripts` field of `package.json`.
+
+```javascript
+packageJson.removeScript({
+  stage: "lint"
+});
+```
+
+Returns a changelog entry object:
+
+```json
+{
+  "event": "removeScript",
+  "field": "scripts",
+  "meta": {
+    "stage": "lint"
   },
   "alreadyExisted": true
 }
