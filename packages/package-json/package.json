@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": ["package.json"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Financial-Times/tooling-helpers.git"
+  },
+  "homepage": "https://github.com/Financial-Times/tooling-helpers/blob/master/packages/package-json/README.md",
   "author": "",
   "license": "MIT",
   "devDependencies": {
