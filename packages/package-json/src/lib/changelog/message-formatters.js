@@ -67,6 +67,7 @@ exports.removeField = ({ field }) => {
  * @param {string} options.meta.version
  * @returns {string}
  */
+
 exports.requireDependency = ({ field, previousValue = undefined, meta }) => {
 	let message = `Required package ${meta.pkg}@${meta.version} in ${field}`;
 	message += previousValue

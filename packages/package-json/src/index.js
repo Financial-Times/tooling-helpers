@@ -212,9 +212,9 @@ module.exports = function loadPackageJson(options = {}) {
 		const changes = { event: "requireDependency", field, pkg, version };
 
 		const dependencyAlreadyExists = typeof dependencies[pkg] !== "undefined";
-		changes.alreadyExisted = dependencyAlreadyExists;
 		if (dependencyAlreadyExists) {
 			changes.previousValue = dependencies[pkg];
+			changes.alreadyExisted = true;
 		}
 
 		dependencies[pkg] = version;
@@ -289,8 +289,7 @@ module.exports = function loadPackageJson(options = {}) {
 
 		const scripts = workingContents.scripts;
 
-		const stageAlreadyExists =
-			typeof scripts[stage] !== "undefined";
+		const stageAlreadyExists = typeof scripts[stage] !== "undefined";
 
 		changes.alreadyExisted = stageAlreadyExists;
 

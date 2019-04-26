@@ -124,9 +124,7 @@ describe("requireScript", () => {
 					stage: "start"
 				}
 			})
-		).toEqual(
-			"Required script for stage 'start' (overwrote existing command)"
-		);
+		).toEqual("Required script for stage 'start' (overwrote existing command)");
 	});
 });
 

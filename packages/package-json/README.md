@@ -50,7 +50,6 @@ Checks if there are file changes to write.
 packageJson.hasChangesToWrite(); // true or false
 ```
 
-
 ### writeChanges
 
 Writes to the `package.json` file.
