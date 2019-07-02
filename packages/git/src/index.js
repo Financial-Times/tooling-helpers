@@ -113,21 +113,28 @@ async function checkoutBranch({ name, workingDirectory = defaults.workingDirecto
  * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
  * @returns {boolean}
  */
-async function deleteBranch({ branch, workingDirectory = defaults.workingDirectory }) {
-	const dugiteExecArgs = constructDugiteExecArgs({
-		command: 'branch',
-		options: {
-			'-D': true,
-		},
-		positional: [branch],
-	})
+async function deleteBranch({ branch, workingDirectory = defaults.workingDirectory } = {}) {
+    try {
+        assert(branch && typeof branch === 'string', 'branch is invalid');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
 
-	const dugiteExecResult = await GitProcess.exec(
-		dugiteExecArgs,
-		workingDirectory,
-	)
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'branch',
+        options: {
+            '-D': true,
+        },
+        positional: [branch],
+    })
 
-	return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+    const dugiteExecResult = await GitProcess.exec(
+        dugiteExecArgs,
+        workingDirectory,
+    )
+
+    return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
 }
 
 /**
@@ -140,31 +147,38 @@ async function deleteBranch({ branch, workingDirectory = defaults.workingDirecto
  * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
  * @returns {Array[string]}
  */
-async function listBranches({ workingDirectory, remote = false }) {
-	const dugiteExecArgs = constructDugiteExecArgs({
-		command: 'branch',
-		options: {
-			'-r': remote,
-		},
-		positional: [],
-	})
+async function listBranches({ workingDirectory = defaults.workingDirectory, remote = false } = {}) {
+    try {
+        assert(typeof remote === 'boolean', 'remote is invalid');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
 
-	const dugiteExecResult = await GitProcess.exec(
-		dugiteExecArgs,
-		workingDirectory,
-	)
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'branch',
+        options: {
+            '-r': remote,
+        },
+        positional: [],
+    })
 
-	handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+    const dugiteExecResult = await GitProcess.exec(
+        dugiteExecArgs,
+        workingDirectory,
+    )
 
-	return dugiteExecResult.stdout
-		.split('\n')
-		.map(line =>
-			line
-				.replace(/^\*/, '') // remove leading asterisk, which `git branch` uses to show current branch
-				.trim()
-				.replace(/^origin(?:\/HEAD -> origin)?\//, ''), // remove origin/ prefixes from remote branches
-		)
-		.filter(Boolean) // remove empty lines
+    handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+
+    return dugiteExecResult.stdout
+        .split('\n')
+        .map(line =>
+            line
+                .replace(/^\*/, '') // remove leading asterisk, which `git branch` uses to show current branch
+                .trim()
+                .replace(/^origin(?:\/HEAD -> origin)?\//, ''), // remove origin/ prefixes from remote branches
+        )
+        .filter(Boolean) // remove empty lines
 }
 
 /**
@@ -314,6 +328,8 @@ module.exports = {
     clone,
     createBranch,
     checkoutBranch,
+    listBranches,
+    deleteBranch,
     add,
     rm,
     commit,

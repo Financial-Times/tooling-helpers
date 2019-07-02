@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["package.json"],
+  "keywords": [
+    "package.json"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Financial-Times/tooling-helpers.git"
