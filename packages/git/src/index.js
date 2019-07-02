@@ -104,6 +104,70 @@ async function checkoutBranch({ name, workingDirectory = defaults.workingDirecto
 }
 
 /**
+ * Delete a branch.
+ *
+ * @see https://git-scm.com/docs/git-branch
+ *
+ * @param {object} options
+ * @param {string} options.branch
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @returns {boolean}
+ */
+async function deleteBranch({ branch, workingDirectory = defaults.workingDirectory }) {
+	const dugiteExecArgs = constructDugiteExecArgs({
+		command: 'branch',
+		options: {
+			'-D': true,
+		},
+		positional: [branch],
+	})
+
+	const dugiteExecResult = await GitProcess.exec(
+		dugiteExecArgs,
+		workingDirectory,
+	)
+
+	return handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+}
+
+/**
+ * List branches.
+ *
+ * @see https://git-scm.com/docs/git-branch
+ *
+ * @param {object} options
+ * @param {boolean} options.remote - List remote-tracking branches instead of local branches
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @returns {Array[string]}
+ */
+async function listBranches({ workingDirectory, remote = false }) {
+	const dugiteExecArgs = constructDugiteExecArgs({
+		command: 'branch',
+		options: {
+			'-r': remote,
+		},
+		positional: [],
+	})
+
+	const dugiteExecResult = await GitProcess.exec(
+		dugiteExecArgs,
+		workingDirectory,
+	)
+
+	handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+
+	return dugiteExecResult.stdout
+		.split('\n')
+		.map(line =>
+			line
+				.replace(/^\*/, '') // remove leading asterisk, which `git branch` uses to show current branch
+				.trim()
+				.replace(/^origin(?:\/HEAD -> origin)?\//, ''), // remove origin/ prefixes from remote branches
+		)
+		.filter(Boolean) // remove empty lines
+}
+
+/**
  * Add file contents to the index.
  *
  * @see https://git-scm.com/docs/git-add
