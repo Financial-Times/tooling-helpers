@@ -11,5 +11,10 @@
   "license": "MIT",
   "dependencies": {
     "dugite": "^1.82.0"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/financial-times/tooling-helpers.git",
+    "directory": "packages/git"
   }
 }
