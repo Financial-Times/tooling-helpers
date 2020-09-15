@@ -318,6 +318,43 @@ async function push({ repository = '', refspec = '', workingDirectory = defaults
 }
 
 /**
+ * Find commits yet to be applied to upstream
+ *
+ * @see https://git-scm.com/docs/git-diff
+ *
+ * @param {object} options
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
+ * @param {string} options.upstream - Upstream branch to search for equivalent commits.
+ * @param {string} options.head - Working branch; defaults to HEAD.
+ * @returns {Array[string]}
+ */
+async function cherry({ workingDirectory = defaults.workingDirectory, upstream, head = '' } = {}) {
+    try {
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
+        assert(upstream && typeof upstream === 'string', 'upstream must be a string');
+        assert(typeof head === 'string', 'head must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'cherry',
+        options: {
+            '-v': true
+        },
+        positional: [upstream, head]
+    })
+    const dugiteExecResult = await GitProcess.exec(
+        dugiteExecArgs,
+        workingDirectory,
+        )
+        
+    handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs });
+    return dugiteExecResult.stdout
+        .split('\n')
+        .filter(Boolean) // remove empty lines
+}
+
+/**
  * This module provides methods for executing common git operations.
  * It is a thin wrapper around dugite (https://github.com/desktop/dugite),
  * which provides JavaScript bindings for interacting with the git command line
@@ -334,4 +371,5 @@ module.exports = {
     rm,
     commit,
     push,
+    cherry
 };
