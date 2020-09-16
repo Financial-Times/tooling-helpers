@@ -6,7 +6,7 @@ afterEach(() => {
     jest.clearAllMocks();
 });
 
-describe('`cherry` method returns an array of strings when given valid options', () => {
+describe('`cherry` method returns an empty array when given valid options but no commits have been made', () => {
 
     beforeAll(() => {
         GitProcess.exec.mockResolvedValue({
@@ -44,6 +44,46 @@ describe('`cherry` method returns an array of strings when given valid options',
     });
 
 });
+
+describe('`cherry` method returns an array of strings when given valid options and commits have been made', () => {
+
+    beforeAll(() => {
+        GitProcess.exec.mockResolvedValue({
+            stdout: "+ 7b79a0247085663de33b0c059d4a5f9c7dd604e4 initial commit",
+            stderr: "",
+            exitCode: 0,
+        });
+    });
+
+    test('workingDirectory', async () => {
+        await expect(
+            cherry({
+                upstream: 'origin'
+            })
+        ).resolves.toEqual(['+ 7b79a0247085663de33b0c059d4a5f9c7dd604e4 initial commit']);
+    });
+
+    test('workingDirectory, upstream', async () => {
+        await expect(
+            cherry({
+                workingDirectory: '/tmp/repository',
+                upstream: 'origin'
+            })
+        ).resolves.toEqual(['+ 7b79a0247085663de33b0c059d4a5f9c7dd604e4 initial commit']);
+    });
+
+    test('workingDirectory, upstream, head', async () => {
+        await expect(
+            cherry({
+                workingDirectory: '/tmp/repository',
+                upstream: 'origin',
+                head: 'new-branch'
+            })
+        ).resolves.toEqual(['+ 7b79a0247085663de33b0c059d4a5f9c7dd604e4 initial commit']);
+    });
+
+});
+
 
 describe('`cherry` method throws `InvalidOptions` error when given invalid options', () => {
 
