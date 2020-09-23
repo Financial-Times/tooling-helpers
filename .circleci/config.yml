@@ -1,9 +1,9 @@
 version: 2.1
 
 executors:
-  circleci-node-10:
+  circleci-node-14:
     docker:
-      - image: circleci/node:10.15.3
+      - image: circleci/node:14-browsers
     working_directory: ~/project/build
 
 commands:
@@ -70,7 +70,7 @@ references:
 jobs:
 
   build:
-    executor: circleci-node-10
+    executor: circleci-node-14
     steps:
       - checkout
       - *restore_cache_root
@@ -82,7 +82,7 @@ jobs:
             - build
 
   test:
-    executor: circleci-node-10
+    executor: circleci-node-14
     steps:
       - *attach_workspace
       - run:
@@ -90,7 +90,7 @@ jobs:
           command: npm test
 
   publish:
-    executor: circleci-node-10
+    executor: circleci-node-14
     steps:
       - *attach_workspace
       - run:
