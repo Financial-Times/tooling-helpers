@@ -9,7 +9,7 @@
  * ```javascript
  * constructDugiteExecArgs({
  *     command: "clone",
- *     options: { "--origin": "origin", "--branch": "master" },
+ *     options: { "--origin": "origin", "--branch": "main" },
  *     positional: [ "git@github.com:org/repository.git", "/tmp/repo" ]
  * })
  * ```

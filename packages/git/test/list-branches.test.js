@@ -10,7 +10,7 @@ describe('`listBranches` method returns parsed command output when given valid o
 
     beforeAll(() => {
         GitProcess.exec.mockResolvedValue({
-            stdout: `* master
+            stdout: `* main
   branch1
   branch2
 `,
@@ -22,7 +22,7 @@ describe('`listBranches` method returns parsed command output when given valid o
     test('no args', async () => {
         await expect(
             listBranches({})
-        ).resolves.toEqual(['master', 'branch1', 'branch2']);
+        ).resolves.toEqual(['main', 'branch1', 'branch2']);
     });
 
     test('workingDirectory', async () => {
@@ -30,7 +30,7 @@ describe('`listBranches` method returns parsed command output when given valid o
             listBranches({
                 workingDirectory: '/tmp/repository'
             })
-        ).resolves.toEqual(['master', 'branch1', 'branch2']);
+        ).resolves.toEqual(['main', 'branch1', 'branch2']);
     });
 
     test('remote', async () => {
@@ -38,7 +38,7 @@ describe('`listBranches` method returns parsed command output when given valid o
             listBranches({
                 remote: true
             })
-        ).resolves.toEqual(['master', 'branch1', 'branch2']);
+        ).resolves.toEqual(['main', 'branch1', 'branch2']);
     });
 
 });
