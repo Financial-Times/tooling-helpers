@@ -3,7 +3,7 @@ const { getCentralBranch } = require('../src');
 async function main() {
     try {
         await getCentralBranch({
-            remoteUrl: 'git@github.com:Financial-Times/next-health.git',
+            remoteUrl: 'git@github.com:org/repository.git',
         });
     } catch (err) {
         // eslint-disable-next-line no-console
