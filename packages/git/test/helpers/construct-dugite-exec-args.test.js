@@ -60,14 +60,14 @@ describe('`constructDugiteExecArgs` returns the correct array for any combinatio
         ]);
     });
 
-    test('command: "push"; positional: "origin", "master"', () => {
+    test('command: "push"; positional: "origin", "main"', () => {
         const dugiteExecArgs = constructDugiteExecArgs({
             command: 'push',
-            positional: ['origin', 'master']
+            positional: ['origin', 'main']
         });
 
         expect(dugiteExecArgs).toEqual([
-            'push', 'origin', 'master'
+            'push', 'origin', 'main'
         ]);
     });
 

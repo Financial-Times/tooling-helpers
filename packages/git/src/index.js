@@ -182,6 +182,41 @@ async function listBranches({ workingDirectory = defaults.workingDirectory, remo
 }
 
 /**
+ * Get central branch
+ *
+ * @see https://git-scm.com/docs/git-remote
+ *
+ * @param {object} options
+ * @param {boolean} options.remoteUrl - Repository's remote url
+ * @returns {string}
+ */
+async function getCentralBranch({ remoteUrl } = {}) {
+    try {
+        assert(remoteUrl && typeof remoteUrl === 'string', 'remoteUrl must be a string');
+    } catch (err) {
+        throw new Error(`InvalidOptions: ${err.message}`);
+    }
+
+    const dugiteExecArgs = constructDugiteExecArgs({
+        command: 'remote',
+        options: {},
+        positional: ['show', remoteUrl,],
+    })
+
+    const dugiteExecResult = await GitProcess.exec(
+        dugiteExecArgs,
+    )
+
+    handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+
+    return dugiteExecResult.stdout
+        .split('\n')
+        .find(line => line.includes('HEAD branch:'))
+        .replace('HEAD branch: ', '')
+        .trim()
+}
+
+/**
  * Add file contents to the index.
  *
  * @see https://git-scm.com/docs/git-add
@@ -366,6 +401,7 @@ module.exports = {
     createBranch,
     checkoutBranch,
     listBranches,
+    getCentralBranch,
     deleteBranch,
     add,
     rm,
