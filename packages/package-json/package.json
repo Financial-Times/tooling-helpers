@@ -19,5 +19,12 @@
   "license": "MIT",
   "devDependencies": {
     "memfs": "^2.15.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "engines": {
+    "node": "12.x",
+    "npm": "7.x"
   }
 }

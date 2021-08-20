@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  node: circleci/node@4.6.0
+
 executors:
   circleci-node:
     docker:
@@ -81,6 +84,8 @@ jobs:
     steps:
       - checkout
       - *restore_cache_root
+      - node/install-npm:
+          version: "7"
       - npm-install
       - *create_cache_root
       - persist_to_workspace:
