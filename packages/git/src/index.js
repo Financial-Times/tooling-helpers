@@ -188,11 +188,13 @@ async function listBranches({ workingDirectory = defaults.workingDirectory, remo
  *
  * @param {object} options
  * @param {boolean} options.remoteUrl - Repository's remote url
+ * @param {string} options.workingDirectory - Directory path to execute git command in (overrides defaults)
  * @returns {string}
  */
-async function getCentralBranch({ remoteUrl } = {}) {
+async function getCentralBranch({ remoteUrl, workingDirectory = defaults.workingDirectory } = {}) {
     try {
         assert(remoteUrl && typeof remoteUrl === 'string', 'remoteUrl must be a string');
+        assert(workingDirectory && typeof workingDirectory === 'string', 'workingDirectory must be a string');
     } catch (err) {
         throw new Error(`InvalidOptions: ${err.message}`);
     }
@@ -203,11 +205,9 @@ async function getCentralBranch({ remoteUrl } = {}) {
         positional: ['show', remoteUrl,],
     })
 
-    const dugiteExecResult = await GitProcess.exec(
-        dugiteExecArgs,
-    )
+    const dugiteExecResult = await dugiteExec(dugiteExecArgs, workingDirectory);
 
-    handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs })
+    handleDugiteExecResult({ dugiteExecResult, dugiteExecArgs, workingDirectory })
 
     return dugiteExecResult.stdout
         .split('\n')
