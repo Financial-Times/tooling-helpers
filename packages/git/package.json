@@ -16,5 +16,12 @@
     "type": "git",
     "url": "https://github.com/financial-times/tooling-helpers.git",
     "directory": "packages/git"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "engines": {
+    "node": "12.x",
+    "npm": "7.x"
   }
 }
