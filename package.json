@@ -5,7 +5,7 @@
     "test": "npm run unit-test",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
     "unit-test": "jest",
-    "preinstall": "[[ \"$INIT_CWD\" != \"$PWD\" ]] || npm_config_yes=true npx check-engine"
+    "preinstall": "[ \"$INIT_CWD\" != \"$PWD\" ] || npm_config_yes=true npx check-engine"
   },
   "devDependencies": {
     "@financial-times/athloi": "^1.0.0-beta.16",
