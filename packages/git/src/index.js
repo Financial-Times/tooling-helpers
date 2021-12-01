@@ -1,6 +1,6 @@
 const assert = require('assert');
 const { GitProcess } = require('dugite');
-const dugiteExec = GitProcess.exec;
+const dugiteExec = GitProcess.exec.bind(GitProcess)
 
 const constructDugiteExecArgs = require('./helpers/construct-dugite-exec-args');
 const defaults = require('./helpers/defaults');
