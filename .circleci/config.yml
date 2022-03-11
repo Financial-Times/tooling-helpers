@@ -22,55 +22,52 @@ references:
   #
   # Workspace
   #
+  workspace_root: &workspace_root ~/project
 
-  workspace_root: &workspace_root
-    ~/project
-
-  attach_workspace: &attach_workspace
+  attach_workspace:
+    &attach_workspace
     attach_workspace:
       at: *workspace_root
 
-  #
   # Cache keys
   #
-  cache_keys_root: &cache_keys_root
+  cache_keys_root:
+    &cache_keys_root
     keys:
       - cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
 
-  #
   # Cache creation
   #
-
-  create_cache_root: &create_cache_root
+  create_cache_root:
+    &create_cache_root
     save_cache:
       key: cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
       paths:
         - ./node_modules/
 
-  #
   # Cache restoration
   #
-
-  restore_cache_root: &restore_cache_root
+  restore_cache_root:
+    &restore_cache_root
     restore_cache:
       <<: *cache_keys_root
 
-  #
   # Filters
   #
-
-
-  filters_only_renovate_nori: &filters_only_renovate_nori
+  filters_only_renovate_nori:
+    &filters_only_renovate_nori
     branches:
       only: /(^renovate-.*|^nori\/.*)/
 
-  filters_ignore_tags_renovate_nori: &filters_ignore_tags_renovate_nori
+  filters_ignore_tags_renovate_nori:
+    &filters_ignore_tags_renovate_nori
     tags:
       ignore: /.*/
     branches:
       ignore: /(^renovate-.*|^nori\/.*)/
 
-  filters_release_package_build: &filters_release_package_build
+  filters_release_package_build:
+    &filters_release_package_build
     tags:
       only:
         - /^[a-z\-]+-v\d+\.\d+\.\d+(\-\w+\.\d+)?$/
@@ -107,7 +104,8 @@ jobs:
       - *attach_workspace
       - run:
           name: Configure registry.npmjs.org auth token
-          command: echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" > ${HOME}/.npmrc
+          command: echo "//registry.npmjs.org/:_authToken=${NPM_AUTH_TOKEN}" >
+            ${HOME}/.npmrc
       - run:
           name: Extract package name and semver from git tag
           command: |
@@ -137,19 +135,19 @@ workflows:
       - test:
           requires:
             - build
-  
+
   renovate-nori-build-test:
     jobs:
       - waiting-for-approval:
           type: approval
           filters:
-              <<: *filters_only_renovate_nori
+            <<: *filters_only_renovate_nori
       - build:
           requires:
-              - waiting-for-approval
+            - waiting-for-approval
       - test:
           requires:
-              - build
+            - build
 
   build-test-publish:
     jobs:
@@ -162,6 +160,7 @@ workflows:
           requires:
             - build
       - publish:
+          context: npm-publish-token
           filters:
             <<: *filters_release_package_build
           requires:
