@@ -6,7 +6,7 @@ orbs:
 executors:
   circleci-node:
     docker:
-      - image: cimg/node:12.22
+      - image: cimg/node:16.14
     working_directory: ~/project/build
 
 commands:
