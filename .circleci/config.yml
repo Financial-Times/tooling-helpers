@@ -6,8 +6,12 @@ orbs:
 executors:
   circleci-node:
     docker:
-      - image: cimg/node:16.14
+      - image: cimg/node:<< parameters.node-version >>
     working_directory: ~/project/build
+    parameters:
+      node-version:
+        default: "18.16"
+        type: string
 
 commands:
   npm-install:
@@ -24,22 +28,19 @@ references:
   #
   workspace_root: &workspace_root ~/project
 
-  attach_workspace:
-    &attach_workspace
+  attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
 
   # Cache keys
   #
-  cache_keys_root:
-    &cache_keys_root
+  cache_keys_root: &cache_keys_root
     keys:
       - cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
 
   # Cache creation
   #
-  create_cache_root:
-    &create_cache_root
+  create_cache_root: &create_cache_root
     save_cache:
       key: cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
       paths:
@@ -47,27 +48,23 @@ references:
 
   # Cache restoration
   #
-  restore_cache_root:
-    &restore_cache_root
+  restore_cache_root: &restore_cache_root
     restore_cache:
       <<: *cache_keys_root
 
   # Filters
   #
-  filters_only_renovate_nori:
-    &filters_only_renovate_nori
+  filters_only_renovate_nori: &filters_only_renovate_nori
     branches:
       only: /(^renovate-.*|^nori\/.*)/
 
-  filters_ignore_tags_renovate_nori:
-    &filters_ignore_tags_renovate_nori
+  filters_ignore_tags_renovate_nori: &filters_ignore_tags_renovate_nori
     tags:
       ignore: /.*/
     branches:
       ignore: /(^renovate-.*|^nori\/.*)/
 
-  filters_release_package_build:
-    &filters_release_package_build
+  filters_release_package_build: &filters_release_package_build
     tags:
       only:
         - /^[a-z\-]+-v\d+\.\d+\.\d+(\-\w+\.\d+)?$/
@@ -81,8 +78,6 @@ jobs:
     steps:
       - checkout
       - *restore_cache_root
-      - node/install-npm:
-          version: "7"
       - npm-install
       - *create_cache_root
       - persist_to_workspace:
@@ -132,9 +127,17 @@ workflows:
       - build:
           filters:
             <<: *filters_ignore_tags_renovate_nori
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
 
   renovate-nori-build-test:
     jobs:
@@ -145,23 +148,39 @@ workflows:
       - build:
           requires:
             - waiting-for-approval
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
 
   build-test-publish:
     jobs:
       - build:
           filters:
             <<: *filters_release_package_build
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           filters:
             <<: *filters_release_package_build
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - publish:
           context: npm-publish-token
           filters:
             <<: *filters_release_package_build
           requires:
-            - test
+            - test-v18.16

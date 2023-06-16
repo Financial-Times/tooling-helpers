@@ -1,11 +1,12 @@
 {
   "private": true,
-  "workspaces": [ "packages/*" ],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "test": "npm run unit-test",
     "eslint-check": "eslint --print-config . | eslint-config-prettier-check",
-    "unit-test": "jest",
-    "preinstall": "[[ \"$INIT_CWD\" != \"$PWD\" ]] || npm_config_yes=true npx check-engine"
+    "unit-test": "jest"
   },
   "devDependencies": {
     "@financial-times/athloi": "^1.0.0-beta.16",
@@ -17,11 +18,10 @@
     "jest-junit": "^6.2.1"
   },
   "engines": {
-    "node": "16.x",
-    "npm": "7.x"
+    "node": "16.x || 18.x",
+    "npm": "7.x || 8.x || 9.x"
   },
   "volta": {
-    "node": "16.14.0",
-    "npm": "7.20.2"
+    "node": "18.16.0"
   }
 }
