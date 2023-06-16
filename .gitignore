@@ -80,5 +80,4 @@ typings/
 .dynamodb/
 
 # Generated files
-package-lock.json
 test-results/
