@@ -1,45 +1,37 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.6.0
-
-executors:
-  circleci-node:
-    docker:
-      - image: cimg/node:16.14
-    working_directory: ~/project/build
-
-commands:
-  npm-install:
-    description: "npm install without generating a package-lock file"
-    steps:
-      - run:
-          name: "Install project dependencies"
-          command: npm install --no-package-lock
+  node: circleci/node@5.1.0
 
 references:
+  # Executor
+  container_config_node: &container_config_node
+    working_directory: ~/project/build
+    docker:
+      - image: cimg/node:<< parameters.node-version >>
+    parameters:
+      node-version:
+        default: "18.16"
+        type: string
 
   #
   # Workspace
   #
   workspace_root: &workspace_root ~/project
 
-  attach_workspace:
-    &attach_workspace
+  attach_workspace: &attach_workspace
     attach_workspace:
       at: *workspace_root
 
   # Cache keys
   #
-  cache_keys_root:
-    &cache_keys_root
+  cache_keys_root: &cache_keys_root
     keys:
       - cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
 
   # Cache creation
   #
-  create_cache_root:
-    &create_cache_root
+  create_cache_root: &create_cache_root
     save_cache:
       key: cache-root-v1-{{ .Branch }}-{{ checksum "./package.json" }}
       paths:
@@ -47,27 +39,23 @@ references:
 
   # Cache restoration
   #
-  restore_cache_root:
-    &restore_cache_root
+  restore_cache_root: &restore_cache_root
     restore_cache:
       <<: *cache_keys_root
 
   # Filters
   #
-  filters_only_renovate_nori:
-    &filters_only_renovate_nori
+  filters_only_renovate_nori: &filters_only_renovate_nori
     branches:
       only: /(^renovate-.*|^nori\/.*)/
 
-  filters_ignore_tags_renovate_nori:
-    &filters_ignore_tags_renovate_nori
+  filters_ignore_tags_renovate_nori: &filters_ignore_tags_renovate_nori
     tags:
       ignore: /.*/
     branches:
       ignore: /(^renovate-.*|^nori\/.*)/
 
-  filters_release_package_build:
-    &filters_release_package_build
+  filters_release_package_build: &filters_release_package_build
     tags:
       only:
         - /^[a-z\-]+-v\d+\.\d+\.\d+(\-\w+\.\d+)?$/
@@ -77,13 +65,11 @@ references:
 jobs:
 
   build:
-    executor: circleci-node
+    <<: *container_config_node
     steps:
       - checkout
       - *restore_cache_root
-      - node/install-npm:
-          version: "7"
-      - npm-install
+      - node/install-packages
       - *create_cache_root
       - persist_to_workspace:
           root: *workspace_root
@@ -91,7 +77,7 @@ jobs:
             - build
 
   test:
-    executor: circleci-node
+    <<: *container_config_node
     steps:
       - *attach_workspace
       - run:
@@ -99,7 +85,7 @@ jobs:
           command: npm test
 
   publish:
-    executor: circleci-node
+    <<: *container_config_node
     steps:
       - *attach_workspace
       - run:
@@ -132,9 +118,17 @@ workflows:
       - build:
           filters:
             <<: *filters_ignore_tags_renovate_nori
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
 
   renovate-nori-build-test:
     jobs:
@@ -145,23 +139,39 @@ workflows:
       - build:
           requires:
             - waiting-for-approval
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
 
   build-test-publish:
     jobs:
       - build:
           filters:
             <<: *filters_release_package_build
+          name: build-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - test:
           filters:
             <<: *filters_release_package_build
           requires:
-            - build
+            - build-v<< matrix.node-version >>
+          name: test-v<< matrix.node-version >>
+          matrix:
+            parameters:
+              node-version: [ "16.20", "18.16" ]
       - publish:
           context: npm-publish-token
           filters:
             <<: *filters_release_package_build
           requires:
-            - test
+            - test-v18.16
